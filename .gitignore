@@ -1,0 +1,110 @@
+# Build/test outputs and dependency caches (keep manifests and lockfiles)
+node_modules/
+dist/
+build/
+target/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.pnpm-store/
+*.py[cod]
+*.egg-info/
+*.tsbuildinfo
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+
+# Local agent instructions, plans, skills and execution scratch notes
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+GEMINI.md
+.codex/
+.agents/
+.claude/
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
+.github/instructions/
+.superpowers/
+/docs/superpowers/
+/.worktrees/
+# Local product/design briefs and detector state are development-agent context.
+/PRODUCT.md
+/DESIGN.md
+/.impeccable/
+# Superseded local implementation checkpoint
+/docs/stage8-ui.md
+
+# Secrets and local configuration; sanitized examples may be committed
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Private application/account data, TDLib sessions and browser state
+# Real data belongs outside the repository; fixtures/ remains versioned.
+data/
+app-data/
+profiles/
+browser-profiles/
+user-data-dir/
+/telegram/
+tdlib-data/
+tdlib-sessions/
+/sessions/
+*.session
+*.session-*
+*.db
+*.db-*
+*.sqlite*
+*.log
+
+# Downloaded model weights (retain model/runtime manifests)
+*.gguf
+*.safetensors
+/models/**/*.bin
+/models/**/*.onnx
+/models/**/*.pt
+/models/**/*.pth
+
+# Local browser test artifacts
+apps/desktop/test-results/
+apps/desktop/playwright-report/
+
+# Target-native build inputs/output and private acceptance fixtures/evidence
+packaging/work/
+packaging/output/
+native-builds/
+native-fixtures/
+native-evidence/
+execution-staging/
+
+# Local editor/OS scratch
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Tauri-generated schema artifacts
+/apps/desktop/src-tauri/gen/schemas/
+
+# Keep Markdown documentation local; README files are the public entry points.
+*.[mM][dD]
+*.[mM][aA][rR][kK][dD][oO][wW][nN]
+*.[mM][kK][dD]
+![Rr][Ee][Aa][Dd][Mm][Ee].[mM][dD]
+![Rr][Ee][Aa][Dd][Mm][Ee].[mM][aA][rR][kK][dD][oO][wW][nN]
+/docs/verification/
+/docs/verification.*

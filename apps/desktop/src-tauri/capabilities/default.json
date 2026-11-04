@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Main local window. No shell, filesystem, process, network or remote content capabilities.",
+  "webviews": ["main"],
+  "permissions": []
+}

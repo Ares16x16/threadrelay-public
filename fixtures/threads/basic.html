@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8"><title>Synthetic rendered post fixture (not Threads markup)</title>
+<style>body{margin:0}article{padding:12px;max-width:600px}section{white-space:pre-wrap}</style>
+<main><div role="feed">
+<article>
+<header><a rel="author" href="https://www.threads.com/@alice">@alice</a> <a href="https://www.threads.com/@alice/post/Code_1?x=tracking#fragment"><time datetime="2026-01-01T00:00:00Z">1m</time></a></header>
+<section aria-label="Post text">Visible first line.<br>Second line.<span hidden>hidden secret</span><span style="display:none">CSS secret</span><span aria-hidden="true">accessible-hidden secret</span><button>not post text</button> <a href="https://example.com/untrusted">a visible link</a></section>
+<footer><button onclick="window.actions.push('like')">Like</button><button onclick="window.actions.push('follow')">Follow</button><button onclick="window.actions.push('reply')">Reply</button></footer>
+</article>
+<article hidden><header><a rel="author" href="https://www.threads.com/@hidden">@hidden</a><a href="https://www.threads.com/@hidden/post/Hidden"><time>now</time></a></header><section aria-label="Post text">Hidden post</section></article>
+</div></main><script>window.actions=[];</script>

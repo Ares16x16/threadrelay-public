@@ -1,0 +1,8075 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://threadrelay.local/contracts/protocol-v1.schema.json",
+  "title": "ThreadRelay protocol v1",
+  "description": "Private parent/child IPC. Four-byte unsigned big-endian byte length; UTF-8 JSON; payload 1..1048576 bytes. No generic setup, URL, file, process or shell bridge.",
+  "definitions": {
+    "Visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "restricted",
+        "unknown"
+      ]
+    },
+    "Mode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "review",
+        "auto"
+      ]
+    },
+    "DeliveryState": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "sending",
+        "sent",
+        "retryable",
+        "failed",
+        "unknown",
+        "cancelled"
+      ]
+    },
+    "SessionState": {
+      "type": "string",
+      "enum": [
+        "stopped",
+        "starting",
+        "running",
+        "pausing",
+        "paused",
+        "stopping",
+        "needs_attention",
+        "failed"
+      ]
+    },
+    "PostIdentity": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "permalink": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        }
+      },
+      "required": [
+        "post_id",
+        "permalink"
+      ],
+      "additionalProperties": false
+    },
+    "ExtractionIssue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "detail": {
+          "type": "string",
+          "maxLength": 100000
+        }
+      },
+      "required": [
+        "code",
+        "detail"
+      ],
+      "additionalProperties": false
+    },
+    "QuoteAttribution": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 100000
+        },
+        "permalink": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "author",
+        "text",
+        "permalink"
+      ],
+      "additionalProperties": false
+    },
+    "ObservedPost": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "permalink": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 100000
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "visibility": {
+          "$ref": "#/definitions/Visibility"
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtractionIssue"
+          },
+          "maxItems": 100
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        },
+        "source_session_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/QuoteAttribution"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_metadata": {
+          "$ref": "#/definitions/ObservedMetadata"
+        }
+      },
+      "required": [
+        "post_id",
+        "permalink",
+        "author",
+        "text",
+        "content_hash",
+        "visibility",
+        "quality_flags",
+        "observed_at",
+        "source_session_id",
+        "quote"
+      ],
+      "additionalProperties": false
+    },
+    "Topic": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        },
+        "positive_examples": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "maxItems": 100
+        },
+        "negative_examples": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "maxItems": 100
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "maxItems": 100
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "minimum_score": {
+          "type": "number",
+          "minimum": 0.11,
+          "maximum": 1,
+          "description": "Uncalibrated model relevance cutoff; not a probability. Missing uses 0.9."
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "description",
+        "positive_examples",
+        "negative_examples",
+        "exclusions",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "TopicResult": {
+      "type": "object",
+      "properties": {
+        "topic_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "match": {
+          "type": "boolean"
+        },
+        "abstained": {
+          "type": "boolean"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "topic_id",
+        "match",
+        "abstained"
+      ],
+      "additionalProperties": false,
+      "description": "Optional score is not a calibrated probability; outputs contain no destinations or actions.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "abstained": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "match": {
+                "const": false
+              },
+              "score": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Classification": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "model_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "topic_results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TopicResult"
+          },
+          "maxItems": 100
+        },
+        "abstained": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "post_id",
+        "model_version",
+        "topic_results",
+        "abstained"
+      ],
+      "additionalProperties": false
+    },
+    "Route": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "topic_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "destination_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "mode": {
+          "$ref": "#/definitions/Mode"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        },
+        "sender": {
+          "$ref": "#/definitions/SenderIdentity"
+        },
+        "allow_unverified_source": {
+          "type": "boolean",
+          "description": "Explicit exact-route consent for link-only sharing of audience-unverified visible sources under the topic_score policy. Omitted or false preserves public-only Auto."
+        },
+        "message_template": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "queue": {
+          "$ref": "#/definitions/RouteQueueConfig"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "topic_ids",
+        "destination_id",
+        "mode",
+        "enabled",
+        "account_id",
+        "account_epoch",
+        "sender"
+      ],
+      "additionalProperties": false
+    },
+    "Approval": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "destination_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "route_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "route_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        },
+        "sender": {
+          "$ref": "#/definitions/SenderIdentity"
+        }
+      },
+      "required": [
+        "post_id",
+        "content_hash",
+        "destination_id",
+        "route_version",
+        "id",
+        "route_id",
+        "account_id",
+        "account_epoch",
+        "sender"
+      ],
+      "additionalProperties": false
+    },
+    "RouteReference": {
+      "type": "object",
+      "properties": {
+        "route_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "route_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approval_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "route_id",
+        "route_version",
+        "approval_id"
+      ],
+      "additionalProperties": false
+    },
+    "Delivery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "post_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "destination_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "state": {
+          "$ref": "#/definitions/DeliveryState"
+        },
+        "attempt_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "route_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RouteReference"
+          },
+          "maxItems": 100
+        },
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        },
+        "sender": {
+          "$ref": "#/definitions/SenderIdentity"
+        },
+        "temporary_message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "final_message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "request_extra": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workflow_job_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "post_id",
+        "destination_id",
+        "content_hash",
+        "state",
+        "attempt_id",
+        "message_id",
+        "route_refs",
+        "account_id",
+        "account_epoch",
+        "sender",
+        "temporary_message_id",
+        "final_message_id",
+        "request_extra"
+      ],
+      "additionalProperties": false,
+      "description": "id is the durable delivery/operation identity, deduplicated by account_id+post_id+destination_id independently of sender. message_id is a legacy final_message_id alias, never the temporary ID. claim/attempt correlation is not authorization to send.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "sent"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "final_message_id": {
+                "$ref": "#/definitions/TelegramId"
+              },
+              "message_id": {
+                "$ref": "#/definitions/TelegramId"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "workflow_job_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "route_refs": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "route_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "SessionConfig": {
+      "type": "object",
+      "properties": {
+        "feed_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://(?:www\\.)?threads\\.(?:com|net)/(?:[^\\s#]*)?$"
+        },
+        "mode": {
+          "$ref": "#/definitions/Mode",
+          "default": "review"
+        },
+        "duration_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1800,
+          "default": 1800
+        },
+        "max_posts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 100
+        },
+        "max_auto_deliveries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "default": 10
+        },
+        "continuous": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep collecting across internal pages until explicit Pause/Stop or a hard dependency failure. Ignores duration/post caps; automatic delivery budgets still apply."
+        },
+        "route_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true
+        },
+        "unlimited_auto_deliveries": {
+          "type": "boolean",
+          "default": false,
+          "description": "Explicitly keep automatic delivery running without a per-session count cap. Pause/Stop, route timing and Telegram-required waits still apply. Omitted or false keeps max_auto_deliveries, including zero disabling sends."
+        }
+      },
+      "required": [
+        "feed_url"
+      ],
+      "additionalProperties": false,
+      "description": "Collection and automatic delivery limits are separate. Unlimited automatic delivery requires explicit unlimited_auto_deliveries=true; zero max_auto_deliveries still disables automatic starts when the unlimited flag is absent or false."
+    },
+    "SessionCounters": {
+      "type": "object",
+      "properties": {
+        "observed": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "matched": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "queued": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "sent": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        }
+      },
+      "required": [
+        "observed",
+        "matched",
+        "queued",
+        "sent"
+      ],
+      "additionalProperties": false
+    },
+    "SessionSnapshot": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/SessionState",
+          "default": "stopped"
+        },
+        "counters": {
+          "$ref": "#/definitions/SessionCounters"
+        },
+        "attention_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100000
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "config": {
+          "$ref": "#/definitions/SessionConfig",
+          "description": "Last successfully promoted session configuration; absent during a new unpromoted start."
+        }
+      },
+      "required": [
+        "state",
+        "counters",
+        "attention_reason"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryProposal": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/ObservedPost"
+        },
+        "route": {
+          "$ref": "#/definitions/Route"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "approval_required": {
+          "type": "boolean"
+        },
+        "plan_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "route_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RouteReference"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "destination": {
+          "$ref": "#/definitions/DestinationSnapshot"
+        },
+        "destination_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "post",
+        "route",
+        "labels",
+        "approval_required"
+      ],
+      "additionalProperties": false,
+      "description": "Routing emits plan_id, contributing route_refs and destination revision/audience. Legacy DTOs without these are display/evaluation only, never approval or send authority."
+    },
+    "AuthorizationResult": {
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "allowed",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "ModelManifest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "runtime_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "quantization": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "url",
+        "sha256",
+        "license",
+        "runtime_version",
+        "quantization"
+      ],
+      "additionalProperties": false
+    },
+    "VerificationResult": {
+      "type": "object",
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "valid",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "ShutdownReport": {
+      "type": "object",
+      "properties": {
+        "stopped": {
+          "type": "boolean"
+        },
+        "remaining": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "stopped",
+        "remaining"
+      ],
+      "additionalProperties": false,
+      "description": "Remaining names are diagnostics, never process handles or renderer-supplied control targets."
+    },
+    "PruneReport": {
+      "type": "object",
+      "properties": {
+        "deleted_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "required": [
+        "deleted_counts"
+      ],
+      "additionalProperties": false
+    },
+    "RecoverySummary": {
+      "type": "object",
+      "properties": {
+        "counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "counts",
+        "reasons"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryEvent": {
+      "type": "object",
+      "properties": {
+        "delivery_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "state": {
+          "$ref": "#/definitions/DeliveryState"
+        }
+      },
+      "required": [
+        "delivery_id",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "DatasetRecord": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/ObservedPost"
+        },
+        "expected_topic_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "uniqueItems": true,
+          "maxItems": 100
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "zh",
+            "en",
+            "mixed",
+            "other"
+          ]
+        }
+      },
+      "required": [
+        "post",
+        "expected_topic_ids",
+        "language"
+      ],
+      "additionalProperties": false
+    },
+    "Dataset": {
+      "type": "object",
+      "properties": {
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DatasetRecord"
+          },
+          "maxItems": 100000
+        },
+        "split": {
+          "type": "string",
+          "enum": [
+            "train",
+            "validation",
+            "test"
+          ]
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "synthetic": {
+          "type": "boolean",
+          "description": "Required by the offline evaluation API. Synthetic data never supplies release evidence."
+        }
+      },
+      "required": [
+        "records",
+        "split"
+      ],
+      "additionalProperties": false
+    },
+    "EvaluationReport": {
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "versions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "hardware": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "metrics",
+        "versions",
+        "hardware"
+      ],
+      "additionalProperties": false,
+      "description": "Metrics are report data only, never classifier actions or routing input."
+    },
+    "EmptyPayload": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "DismissPayload": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "post_id"
+      ],
+      "additionalProperties": false
+    },
+    "ErrorPayload": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "unsupported",
+            "invalid_request",
+            "internal_error"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false
+    },
+    "Command": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "InitializeLocalWorkspace"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Start"
+            },
+            "payload": {
+              "$ref": "#/definitions/SessionConfig"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Pause"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Stop"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryState"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SaveTopic"
+            },
+            "payload": {
+              "$ref": "#/definitions/Topic"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SaveRoute"
+            },
+            "payload": {
+              "$ref": "#/definitions/Route"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Approve"
+            },
+            "payload": {
+              "$ref": "#/definitions/Approval"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Dismiss"
+            },
+            "payload": {
+              "$ref": "#/definitions/DismissPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryTopics"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryRoutes"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryHistory"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryReview"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryAccount"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "BeginTelegramLogin"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "RestoreTelegramSession"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "CheckTelegramLogin"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "CancelTelegramLogin"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "LogoutTelegram"
+            },
+            "payload": {
+              "$ref": "#/definitions/LogoutRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "VerifyDestination"
+            },
+            "payload": {
+              "$ref": "#/definitions/DestinationRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SelectSender"
+            },
+            "payload": {
+              "$ref": "#/definitions/SenderRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "OpenThreadsLogin"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ApproveReview"
+            },
+            "payload": {
+              "$ref": "#/definitions/ReviewApprovalRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "DismissReview"
+            },
+            "payload": {
+              "$ref": "#/definitions/DismissReviewRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "RequestTelegramQr"
+            },
+            "payload": {
+              "$ref": "#/definitions/QrRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryDestination"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryReadiness"
+            },
+            "payload": {
+              "$ref": "#/definitions/SessionConfig"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryRetention"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SaveRetention"
+            },
+            "payload": {
+              "$ref": "#/definitions/RetentionPolicy"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryAutoStatus"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SaveAutoPolicy"
+            },
+            "payload": {
+              "$ref": "#/definitions/AutoPolicy"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "OptInAutoRoute"
+            },
+            "payload": {
+              "$ref": "#/definitions/AutoRouteOptIn"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "TestSample"
+            },
+            "payload": {
+              "$ref": "#/definitions/SampleRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "BulkApproveReview"
+            },
+            "payload": {
+              "$ref": "#/definitions/BulkReviewRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "BulkDismissReview"
+            },
+            "payload": {
+              "$ref": "#/definitions/BulkDismissRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "PreviewAutoRoute"
+            },
+            "payload": {
+              "$ref": "#/definitions/Route"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "VerifySavedMessages"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryCollection"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryArchivePosts"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchivePostsQuery"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryArchiveRuns"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchiveRunsQuery"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ReadArchiveDetail"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchiveDetailRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "QueryDeliveryWorkspace"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "SaveMessageTemplate"
+            },
+            "payload": {
+              "$ref": "#/definitions/SaveMessageTemplateRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "ConfigureDeliveryDraft"
+            },
+            "payload": {
+              "$ref": "#/definitions/ConfigureDeliveryDraftRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "GetDeliveryDraft"
+            },
+            "payload": {
+              "$ref": "#/definitions/GetDeliveryDraftRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "PreviewDeliveryDraft"
+            },
+            "payload": {
+              "$ref": "#/definitions/PreviewDeliveryDraftRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "ApproveDeliveryDraft"
+            },
+            "payload": {
+              "$ref": "#/definitions/ApproveDeliveryDraftRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "QueryDeliveryJobs"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryJobsQuery"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "PauseDeliveryJob"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryJobRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "ResumeDeliveryJob"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryJobRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "CancelDeliveryJob"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryJobRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryArchiveDeliveries"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchivePostsQuery"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SuspendCollection"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryAppStatus"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryTelegramDestinations"
+            },
+            "payload": {
+              "$ref": "#/definitions/TelegramDestinationsQuery"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "RefreshTelegramDestinations"
+            },
+            "payload": {
+              "$ref": "#/definitions/TelegramDestinationsRefresh"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryActivity"
+            },
+            "payload": {
+              "$ref": "#/definitions/ActivityQuery"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryTelegramTest"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SendTelegramTest"
+            },
+            "payload": {
+              "$ref": "#/definitions/TelegramTestRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QuerySavedTelegramDestinations"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SaveTelegramDestination"
+            },
+            "payload": {
+              "$ref": "#/definitions/SaveTelegramDestinationRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "PreviewManualHistorySend"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryJobRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SendManualHistoryOnce"
+            },
+            "payload": {
+              "$ref": "#/definitions/ManualHistorySendRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryManualHistorySend"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryRouteQueue"
+            },
+            "payload": {
+              "$ref": "#/definitions/RouteQueueQuery"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SetRouteQueuePaused"
+            },
+            "payload": {
+              "$ref": "#/definitions/RouteQueuePauseRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "CancelRouteQueueItem"
+            },
+            "payload": {
+              "$ref": "#/definitions/RouteQueueCancelRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "StopCollection"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "BeginTelegramRecovery"
+            },
+            "payload": {
+              "type": "object",
+              "properties": {
+                "delivery_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              },
+              "required": [
+                "delivery_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "QueryTelegramRecovery"
+            },
+            "payload": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ResendTelegramCode"
+            },
+            "payload": {
+              "$ref": "#/definitions/QrRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ClearRouteQueue"
+            },
+            "payload": {
+              "type": "object",
+              "properties": {
+                "route_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              },
+              "required": [
+                "route_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Event": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "State"
+            },
+            "payload": {
+              "$ref": "#/definitions/SessionSnapshot"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Error"
+            },
+            "payload": {
+              "$ref": "#/definitions/ErrorPayload"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Topics"
+            },
+            "payload": {
+              "$ref": "#/definitions/TopicList"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Routes"
+            },
+            "payload": {
+              "$ref": "#/definitions/RouteList"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "History"
+            },
+            "payload": {
+              "$ref": "#/definitions/HistoryList"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Review"
+            },
+            "payload": {
+              "$ref": "#/definitions/ReviewList"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Account"
+            },
+            "payload": {
+              "$ref": "#/definitions/AccountView"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Destination"
+            },
+            "payload": {
+              "$ref": "#/definitions/DestinationSnapshot"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Acknowledged"
+            },
+            "payload": {
+              "$ref": "#/definitions/Acknowledgment"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "DestinationStatus"
+            },
+            "payload": {
+              "$ref": "#/definitions/DestinationStatus"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Readiness"
+            },
+            "payload": {
+              "$ref": "#/definitions/Readiness"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Retention"
+            },
+            "payload": {
+              "$ref": "#/definitions/RetentionPolicy"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "AutoStatus"
+            },
+            "payload": {
+              "$ref": "#/definitions/AutoStatus"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Sample"
+            },
+            "payload": {
+              "$ref": "#/definitions/SampleResult"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "BulkReview"
+            },
+            "payload": {
+              "$ref": "#/definitions/BulkReviewResult"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "AutoRoutePreview"
+            },
+            "payload": {
+              "$ref": "#/definitions/AutoRoutePreview"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Collection"
+            },
+            "payload": {
+              "$ref": "#/definitions/CollectionList"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ArchivePosts"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchivePostsPage"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ArchiveRuns"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchiveRunsPage"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ArchiveDetailChunk"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchiveDetailChunk"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "DeliveryWorkspace"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryWorkspace"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "MessageTemplate"
+            },
+            "payload": {
+              "$ref": "#/definitions/MessageTemplateResult"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "DeliveryDraft"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryDraftResult"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "DeliveryPreview"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryPreview"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "DeliveryJobs"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryJobs"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "type": {
+              "const": "DeliveryJob"
+            },
+            "payload": {
+              "$ref": "#/definitions/DeliveryJobResult"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ArchiveDeliveries"
+            },
+            "payload": {
+              "$ref": "#/definitions/ArchiveDeliveriesPage"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "AppStatus"
+            },
+            "payload": {
+              "$ref": "#/definitions/AppStatus"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "TelegramDestinations"
+            },
+            "payload": {
+              "$ref": "#/definitions/TelegramDestinations"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "Activity"
+            },
+            "payload": {
+              "$ref": "#/definitions/ActivityPage"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "TelegramTestState"
+            },
+            "payload": {
+              "$ref": "#/definitions/TelegramTestState"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "SavedTelegramDestinations"
+            },
+            "payload": {
+              "$ref": "#/definitions/SavedTelegramDestinations"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ManualHistoryPreview"
+            },
+            "payload": {
+              "$ref": "#/definitions/ManualHistoryPreview"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "ManualHistorySendState"
+            },
+            "payload": {
+              "$ref": "#/definitions/ManualHistorySendState"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "RouteQueue"
+            },
+            "payload": {
+              "$ref": "#/definitions/RouteQueue"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "type": {
+              "const": "TelegramRecoveryState"
+            },
+            "payload": {
+              "$ref": "#/definitions/TelegramRecoveryState"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "type",
+            "payload"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "TelegramId": {
+      "type": "string",
+      "pattern": "^(?:0|(?:[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6]|9223372036854775807)|-(?:[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-7]|9223372036854775808))(?![\\s\\S])",
+      "maxLength": 20,
+      "description": "Canonical signed 64-bit decimal string; never a JavaScript Number. Numeric conversion belongs exclusively in the trusted TDLib boundary. Absolute-end assertion excludes trailing line terminators consistently across runtime validators."
+    },
+    "AccountEpoch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Application revocation generation, not a TDLib ID."
+    },
+    "SenderIdentity": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "user",
+            "chat"
+          ]
+        },
+        "id": {
+          "$ref": "#/definitions/TelegramId"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "AccountSnapshot": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        },
+        "auth_state": {
+          "type": "string",
+          "enum": [
+            "logged_out",
+            "authorizing",
+            "ready",
+            "closed",
+            "unknown"
+          ]
+        },
+        "display_name": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "network_state": {
+          "type": "string",
+          "enum": [
+            "offline",
+            "connecting",
+            "online"
+          ]
+        },
+        "revocation_pending": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "account_id",
+        "epoch",
+        "auth_state",
+        "display_name",
+        "network_state",
+        "revocation_pending"
+      ],
+      "additionalProperties": false,
+      "description": "Application status only, never reusable secrets, phone/code/password or raw TDLib updates. Does not construct a TDLib client or grant network permission."
+    },
+    "AuthChallenge": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "phone",
+            "code",
+            "password",
+            "qr"
+          ]
+        },
+        "challenge_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "(?:Z|\\+00:00)$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code_delivery": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AuthCodeDelivery"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "challenge_id",
+        "expires_at"
+      ],
+      "additionalProperties": false,
+      "description": "Opaque challenge metadata only; secure submission operations and state transitions belong to account onboarding, not generic IPC."
+    },
+    "DestinationPermissions": {
+      "type": "object",
+      "properties": {
+        "can_send": {
+          "type": "boolean"
+        },
+        "can_select_sender": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "can_send",
+        "can_select_sender"
+      ],
+      "additionalProperties": false
+    },
+    "DestinationSnapshot": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "chat_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "public",
+            "private",
+            "unknown"
+          ]
+        },
+        "permissions": {
+          "$ref": "#/definitions/DestinationPermissions"
+        },
+        "sender": {
+          "$ref": "#/definitions/SenderIdentity"
+        },
+        "paid_required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "account_id",
+        "chat_id",
+        "title",
+        "audience",
+        "permissions",
+        "sender",
+        "paid_required"
+      ],
+      "additionalProperties": false
+    },
+    "TelegramAttempt": {
+      "type": "object",
+      "properties": {
+        "delivery_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "attempt_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "request_extra": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "temporary_message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "final_message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "$ref": "#/definitions/DeliveryState"
+        }
+      },
+      "required": [
+        "delivery_id",
+        "attempt_id",
+        "request_extra",
+        "temporary_message_id",
+        "final_message_id",
+        "state"
+      ],
+      "additionalProperties": false,
+      "description": "Durable ordered own-send correlation only. Initial temporary message is not Sent; no API response, message content or secret fields. request_extra correlates @extra and is not server idempotency.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "sent"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "final_message_id": {
+                "$ref": "#/definitions/TelegramId"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "TopicList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Topic"
+      },
+      "maxItems": 10000
+    },
+    "RouteList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Route"
+      },
+      "maxItems": 10000
+    },
+    "HistoryItem": {
+      "type": "object",
+      "properties": {
+        "delivery": {
+          "$ref": "#/definitions/Delivery"
+        },
+        "attempts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TelegramAttempt"
+          },
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "delivery",
+        "attempts"
+      ],
+      "additionalProperties": false
+    },
+    "HistoryList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/HistoryItem"
+      },
+      "maxItems": 10000
+    },
+    "ReviewList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ReviewItem"
+      },
+      "maxItems": 10000
+    },
+    "Acknowledgment": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": [
+            "SaveTopic",
+            "SaveRoute",
+            "ApproveReview",
+            "DismissReview",
+            "CancelTelegramLogin",
+            "LogoutTelegram",
+            "OpenThreadsLogin",
+            "BeginTelegramLogin",
+            "VerifyDestination",
+            "SelectSender",
+            "RequestTelegramQr",
+            "SaveRetention",
+            "SaveAutoPolicy",
+            "OptInAutoRoute",
+            "VerifySavedMessages",
+            "RefreshTelegramDestinations",
+            "SendTelegramTest",
+            "SaveTelegramDestination",
+            "SendManualHistoryOnce",
+            "SetRouteQueuePaused",
+            "CancelRouteQueueItem",
+            "RestoreTelegramSession",
+            "CheckTelegramLogin",
+            "ResendTelegramCode",
+            "ClearRouteQueue"
+          ]
+        }
+      },
+      "required": [
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "AccountView": {
+      "type": "object",
+      "properties": {
+        "snapshot": {
+          "$ref": "#/definitions/AccountSnapshot"
+        },
+        "challenge": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AuthChallenge"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "idle",
+            "authorizing",
+            "ready",
+            "authentication_error",
+            "unsupported_auth_state",
+            "authentication_unavailable",
+            "closed",
+            "closing",
+            "revocation_pending",
+            "account_unavailable",
+            "locally_removed",
+            "server_revoked",
+            "cleanup_pending",
+            "challenge_expired"
+          ]
+        },
+        "pending_revocations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TelegramId"
+          },
+          "maxItems": 10000,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "snapshot",
+        "challenge",
+        "status",
+        "pending_revocations"
+      ],
+      "additionalProperties": false
+    },
+    "DestinationRequest": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "private",
+            "group"
+          ]
+        },
+        "sender": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SenderIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "chat_id",
+        "kind",
+        "sender"
+      ],
+      "additionalProperties": false
+    },
+    "SenderRequest": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "sender": {
+          "$ref": "#/definitions/SenderIdentity"
+        }
+      },
+      "required": [
+        "chat_id",
+        "sender"
+      ],
+      "additionalProperties": false
+    },
+    "LogoutRequest": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "close_local",
+            "server_logout",
+            "remove_local_offline"
+          ]
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "ReviewDisclosure": {
+      "type": "object",
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "destination_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "destination_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "public",
+            "private",
+            "unknown"
+          ]
+        },
+        "source_visibility": {
+          "$ref": "#/definitions/Visibility"
+        },
+        "sender_kind": {
+          "type": "string",
+          "enum": [
+            "user",
+            "chat"
+          ]
+        },
+        "sender_id": {
+          "$ref": "#/definitions/TelegramId"
+        }
+      },
+      "required": [
+        "plan_id",
+        "destination_version",
+        "destination_id",
+        "title",
+        "audience",
+        "source_visibility",
+        "sender_kind",
+        "sender_id"
+      ],
+      "additionalProperties": false
+    },
+    "ReviewApprovalRequest": {
+      "type": "object",
+      "properties": {
+        "proposal": {
+          "$ref": "#/definitions/DeliveryProposal"
+        },
+        "disclosure": {
+          "$ref": "#/definitions/ReviewDisclosure"
+        }
+      },
+      "required": [
+        "proposal",
+        "disclosure"
+      ],
+      "additionalProperties": false
+    },
+    "DismissReviewRequest": {
+      "type": "object",
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "plan_id"
+      ],
+      "additionalProperties": false
+    },
+    "ReviewItem": {
+      "type": "object",
+      "properties": {
+        "proposal": {
+          "$ref": "#/definitions/DeliveryProposal"
+        },
+        "outgoing_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100000
+        },
+        "classification": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Classification"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TopicSummary"
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "proposal",
+        "outgoing_text",
+        "classification",
+        "topics"
+      ],
+      "additionalProperties": false
+    },
+    "QrRequest": {
+      "type": "object",
+      "properties": {
+        "challenge_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        }
+      },
+      "required": [
+        "challenge_id",
+        "account_epoch"
+      ],
+      "additionalProperties": false
+    },
+    "DestinationStatus": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "idle",
+            "pending",
+            "verified",
+            "sender_selected",
+            "failed"
+          ]
+        },
+        "snapshot": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DestinationSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "snapshot"
+      ],
+      "additionalProperties": false
+    },
+    "TopicSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "Readiness": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "$ref": "#/definitions/Mode"
+        },
+        "browser": {
+          "enum": [
+            "ready",
+            "unavailable"
+          ]
+        },
+        "inference": {
+          "enum": [
+            "ready",
+            "unavailable"
+          ]
+        },
+        "telegram": {
+          "enum": [
+            "ready",
+            "unavailable"
+          ]
+        },
+        "automatic": {
+          "enum": [
+            "ready",
+            "unavailable"
+          ]
+        },
+        "can_start": {
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "browser_unavailable",
+                "inference_unavailable",
+                "telegram_unavailable",
+                "automatic_approval_unavailable",
+                "select_one_auto_route",
+                "selected_auto_route_unavailable",
+                "automatic_outcome_unknown",
+                "telegram_connection_required"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "mode",
+        "browser",
+        "inference",
+        "telegram",
+        "automatic",
+        "can_start",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "RetentionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text_days",
+        "dedup_days",
+        "diagnostic_days",
+        "confirmed"
+      ],
+      "properties": {
+        "text_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36500
+        },
+        "dedup_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36500
+        },
+        "diagnostic_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36500
+        },
+        "confirmed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AutoPolicy": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/EvaluatedAutoPolicy"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "confirmed",
+            "method"
+          ],
+          "properties": {
+            "confirmed": {
+              "const": true
+            },
+            "method": {
+              "const": "topic_score"
+            }
+          }
+        }
+      ]
+    },
+    "AutoStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "evidence_available",
+        "eligible",
+        "reason"
+      ],
+      "properties": {
+        "policy": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AutoPolicy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_available": {
+          "type": "boolean"
+        },
+        "eligible": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 128
+        }
+      }
+    },
+    "AutoRouteOptIn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route",
+        "confirmed",
+        "expected_receipt"
+      ],
+      "properties": {
+        "route": {
+          "$ref": "#/definitions/Route"
+        },
+        "confirmed": {
+          "const": true
+        },
+        "expected_receipt": {
+          "$ref": "#/definitions/AutoPreviewReceipt"
+        }
+      }
+    },
+    "SampleRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16000
+        },
+        "post_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "SampleResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "sending_possible"
+      ],
+      "properties": {
+        "classification": {
+          "$ref": "#/definitions/Classification"
+        },
+        "sending_possible": {
+          "const": false
+        }
+      }
+    },
+    "BulkReviewRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReviewApprovalRequest"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        }
+      }
+    },
+    "BulkDismissRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DismissReviewRequest"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        }
+      }
+    },
+    "BulkReviewResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "results"
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "plan_id",
+              "status"
+            ],
+            "properties": {
+              "plan_id": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "status": {
+                "enum": [
+                  "staged",
+                  "dismissed",
+                  "rejected"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "AutoPreviewReceipt": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Opaque backend-issued exact Auto preview binding; not a renderer authorization flag."
+    },
+    "AutoRoutePreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route",
+        "destination",
+        "destination_version",
+        "policy",
+        "evidence_sha256",
+        "topics",
+        "versions",
+        "receipt"
+      ],
+      "properties": {
+        "route": {
+          "$ref": "#/definitions/Route"
+        },
+        "destination": {
+          "$ref": "#/definitions/DestinationSnapshot"
+        },
+        "destination_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policy": {
+          "$ref": "#/definitions/AutoPolicy"
+        },
+        "evidence_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AutoPreviewReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "maxItems": 100
+        },
+        "versions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "receipt": {
+          "$ref": "#/definitions/AutoPreviewReceipt"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "policy": {
+                "properties": {
+                  "method": {
+                    "const": "topic_score"
+                  }
+                },
+                "required": [
+                  "method"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "evidence_sha256": {
+                "$ref": "#/definitions/AutoPreviewReceipt"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CollectionItem": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/ObservedPost"
+        },
+        "classification": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Classification"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "topics": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 160
+              }
+            },
+            "required": [
+              "id",
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "post",
+        "classification",
+        "topics"
+      ],
+      "additionalProperties": false
+    },
+    "CollectionList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/CollectionItem"
+      },
+      "maxItems": 100
+    },
+    "ObservedMetadata": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "published_label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "published_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "engagement": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "likes",
+                  "replies",
+                  "reposts",
+                  "quotes",
+                  "views",
+                  "shares"
+                ]
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "kind",
+              "label"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 20
+        },
+        "media": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "image",
+                  "video",
+                  "link"
+                ]
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://",
+                "maxLength": 4096
+              },
+              "alt": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 20
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "ArchiveRevision": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "post_id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "permalink": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "author": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "text_preview": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "visibility": {
+          "$ref": "#/definitions/Visibility"
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtractionIssue"
+          },
+          "maxItems": 100
+        },
+        "provenance": {
+          "enum": [
+            "captured",
+            "legacy_import"
+          ]
+        }
+      },
+      "required": [
+        "revision_id",
+        "post_id",
+        "permalink",
+        "author",
+        "text_preview",
+        "observed_at",
+        "visibility",
+        "quality_flags",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    "ArchiveRun": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "kind": {
+          "enum": [
+            "collection",
+            "sample",
+            "legacy"
+          ]
+        },
+        "revision_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "running",
+            "succeeded",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "classification": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Classification"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_preview": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "topic_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "binding": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "maxProperties": 30
+        },
+        "provenance": {
+          "enum": [
+            "captured",
+            "legacy_import"
+          ]
+        }
+      },
+      "required": [
+        "run_id",
+        "kind",
+        "revision_id",
+        "started_at",
+        "finished_at",
+        "status",
+        "classification",
+        "error_code",
+        "input_preview",
+        "topic_count",
+        "binding",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    "ArchiveRunDetail": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "kind": {
+          "enum": [
+            "collection",
+            "sample",
+            "legacy"
+          ]
+        },
+        "revision_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "running",
+            "succeeded",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "classification": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Classification"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_preview": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "topic_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "binding": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "maxProperties": 30
+        },
+        "provenance": {
+          "enum": [
+            "captured",
+            "legacy_import"
+          ]
+        },
+        "input_snapshot": {
+          "type": "object",
+          "properties": {
+            "post": {
+              "$ref": "#/definitions/ObservedPost"
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 100000
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "run_id",
+        "kind",
+        "revision_id",
+        "started_at",
+        "finished_at",
+        "status",
+        "classification",
+        "error_code",
+        "input_preview",
+        "topic_count",
+        "binding",
+        "provenance",
+        "input_snapshot",
+        "topics"
+      ],
+      "additionalProperties": false
+    },
+    "ArchivePostsQuery": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "search": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "ArchiveRunsQuery": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "revision_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "ArchivePostsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ArchiveRevision"
+          },
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "ArchiveRunsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ArchiveRun"
+          },
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "ArchiveDetailRequest": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "revision",
+            "run",
+            "delivery"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expected_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "kind",
+        "record_id",
+        "offset"
+      ],
+      "additionalProperties": false
+    },
+    "ArchiveDetailChunk": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "revision",
+            "run",
+            "delivery"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "data": {
+          "type": "string",
+          "maxLength": 100000
+        },
+        "next_offset": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "kind",
+        "record_id",
+        "offset",
+        "data",
+        "next_offset",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "WorkflowTarget": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        },
+        "destination_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "destination_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sender": {
+          "$ref": "#/definitions/SenderIdentity"
+        }
+      },
+      "required": [
+        "account_id",
+        "account_epoch",
+        "destination_id",
+        "destination_version",
+        "sender"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryTiming": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "now"
+            },
+            "timezone": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            }
+          },
+          "required": [
+            "mode",
+            "timezone"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "at_time"
+            },
+            "timezone": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "(?:Z|\\+00:00)$"
+            }
+          },
+          "required": [
+            "mode",
+            "timezone",
+            "at"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "fixed"
+            },
+            "timezone": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            "start_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "(?:Z|\\+00:00)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "interval_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 604800
+            }
+          },
+          "required": [
+            "mode",
+            "timezone",
+            "start_at",
+            "interval_seconds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "random"
+            },
+            "timezone": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            "start_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "(?:Z|\\+00:00)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "minimum_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 604800
+            },
+            "maximum_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 604800
+            }
+          },
+          "required": [
+            "mode",
+            "timezone",
+            "start_at",
+            "minimum_seconds",
+            "maximum_seconds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "new_matching"
+            },
+            "timezone": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            "topic_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "interval_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 604800
+            },
+            "delivery_mode": {
+              "enum": [
+                "review",
+                "automatic"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "timezone",
+            "topic_ids",
+            "interval_seconds",
+            "delivery_mode"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "MessageTemplate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120,
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1
+        },
+        "readonly": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "name",
+        "body",
+        "readonly",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryDraft": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WorkflowTarget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "template_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "template_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timing": {
+          "$ref": "#/definitions/DeliveryTiming"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        },
+        "source_policy": {
+          "$ref": "#/definitions/DeliverySourcePolicy"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "revision_ids",
+        "target",
+        "template_id",
+        "template_version",
+        "timing",
+        "created_at",
+        "updated_at",
+        "source_policy"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryPreviewItem": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 160,
+          "minLength": 1
+        },
+        "post_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "due_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        },
+        "missing_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "maxItems": 100
+        },
+        "source_eligible": {
+          "type": "boolean"
+        },
+        "blocked_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "revision_id",
+        "post_id",
+        "url",
+        "text",
+        "due_at",
+        "missing_fields",
+        "source_eligible",
+        "blocked_reasons"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryPreview": {
+      "type": "object",
+      "properties": {
+        "draft_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "preview_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeliveryPreviewItem"
+          },
+          "maxItems": 50
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WorkflowTarget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timing": {
+          "$ref": "#/definitions/DeliveryTiming"
+        },
+        "approvable": {
+          "type": "boolean"
+        },
+        "blocked_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "maxItems": 100
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DestinationSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "topic_bindings": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 10000
+              }
+            },
+            "required": [
+              "id",
+              "version",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "source_policy": {
+          "$ref": "#/definitions/DeliverySourcePolicy"
+        }
+      },
+      "required": [
+        "draft_id",
+        "version",
+        "preview_hash",
+        "items",
+        "target",
+        "timing",
+        "approvable",
+        "blocked_reasons",
+        "destination",
+        "topic_bindings",
+        "source_policy"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryJobStatus": {
+      "enum": [
+        "draft",
+        "blocked",
+        "waiting",
+        "paused",
+        "sending",
+        "sent",
+        "failed",
+        "unknown",
+        "cancelled"
+      ]
+    },
+    "DeliveryJob": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "enum": [
+            "job",
+            "rule"
+          ]
+        },
+        "draft_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "draft_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "post_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WorkflowTarget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "due_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "(?:Z|\\+00:00)$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timing": {
+          "$ref": "#/definitions/DeliveryTiming"
+        },
+        "status": {
+          "$ref": "#/definitions/DeliveryJobStatus"
+        },
+        "blocked_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "maxItems": 100
+        },
+        "requires_approval": {
+          "type": "boolean"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delivery_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attempt_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        },
+        "source_policy": {
+          "$ref": "#/definitions/DeliverySourcePolicy"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "kind",
+        "draft_id",
+        "draft_version",
+        "revision_id",
+        "post_id",
+        "text",
+        "target",
+        "due_at",
+        "timing",
+        "status",
+        "blocked_reasons",
+        "requires_approval",
+        "rule_id",
+        "delivery_id",
+        "attempt_id",
+        "created_at",
+        "updated_at",
+        "source_policy"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryWorkspace": {
+      "type": "object",
+      "properties": {
+        "templates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MessageTemplate"
+          },
+          "maxItems": 100
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "$ref": "#/definitions/WorkflowTarget"
+              },
+              "destination": {
+                "$ref": "#/definitions/DestinationSnapshot"
+              }
+            },
+            "required": [
+              "target",
+              "destination"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100
+        },
+        "drafts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeliveryDraft"
+          },
+          "maxItems": 50
+        },
+        "setup_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "templates",
+        "targets",
+        "drafts",
+        "setup_reasons"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryJobs": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeliveryJob"
+          },
+          "maxItems": 50
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "SaveMessageTemplateRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120,
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "expected_version",
+        "name",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "ConfigureDeliveryDraftRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WorkflowTarget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "template_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "template_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timing": {
+          "$ref": "#/definitions/DeliveryTiming"
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_policy": {
+          "$ref": "#/definitions/DeliverySourcePolicy"
+        }
+      },
+      "required": [
+        "id",
+        "revision_ids",
+        "target",
+        "template_id",
+        "template_version",
+        "timing",
+        "expected_version"
+      ],
+      "additionalProperties": false
+    },
+    "GetDeliveryDraftRequest": {
+      "type": "object",
+      "properties": {
+        "draft_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "draft_id"
+      ],
+      "additionalProperties": false
+    },
+    "PreviewDeliveryDraftRequest": {
+      "type": "object",
+      "properties": {
+        "draft_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "draft_id",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "ApproveDeliveryDraftRequest": {
+      "type": "object",
+      "properties": {
+        "draft_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "preview_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "draft_id",
+        "version",
+        "preview_hash"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryJobsQuery": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DeliveryJobStatus"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "cursor",
+        "limit",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryJobRequest": {
+      "type": "object",
+      "properties": {
+        "job_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "job_id",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "MessageTemplateResult": {
+      "type": "object",
+      "properties": {
+        "template": {
+          "$ref": "#/definitions/MessageTemplate"
+        }
+      },
+      "required": [
+        "template"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryDraftResult": {
+      "type": "object",
+      "properties": {
+        "draft": {
+          "$ref": "#/definitions/DeliveryDraft"
+        }
+      },
+      "required": [
+        "draft"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryJobResult": {
+      "type": "object",
+      "properties": {
+        "job": {
+          "$ref": "#/definitions/DeliveryJob"
+        }
+      },
+      "required": [
+        "job"
+      ],
+      "additionalProperties": false
+    },
+    "ArchiveDelivery": {
+      "type": "object",
+      "properties": {
+        "delivery": {
+          "$ref": "#/definitions/Delivery"
+        },
+        "attempt_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "delivery",
+        "attempt_count",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "ArchiveDeliveriesPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ArchiveDelivery"
+          },
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "DeliverySourcePolicy": {
+      "type": "string",
+      "enum": [
+        "public_only",
+        "manual_audience_reviewed",
+        "captured"
+      ]
+    },
+    "ModelRuntimeStatus": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "not_loaded",
+            "starting",
+            "ready",
+            "classifying",
+            "stopping",
+            "unavailable"
+          ]
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "model_id"
+      ],
+      "additionalProperties": false
+    },
+    "AppStatus": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "const": "ready"
+        },
+        "model": {
+          "$ref": "#/definitions/ModelRuntimeStatus"
+        },
+        "activity": {
+          "enum": [
+            "collection",
+            "sample",
+            null
+          ]
+        },
+        "session": {
+          "$ref": "#/definitions/SessionSnapshot"
+        },
+        "recovery": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RecoverySnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "service",
+        "model",
+        "activity",
+        "session"
+      ],
+      "additionalProperties": false
+    },
+    "TelegramDestinationsQuery": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "search": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "TelegramDestinationsRefresh": {
+      "type": "object",
+      "properties": {
+        "load_more": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "load_more"
+      ],
+      "additionalProperties": false
+    },
+    "TelegramDestinationCandidate": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "type": "string",
+          "pattern": "^-?[1-9][0-9]{0,18}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "kind": {
+          "enum": [
+            "saved_messages",
+            "private",
+            "group",
+            "channel",
+            "secret",
+            "unsupported"
+          ]
+        },
+        "can_verify": {
+          "type": "boolean"
+        },
+        "sender": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SenderIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "chat_id",
+        "title",
+        "kind",
+        "can_verify",
+        "sender"
+      ],
+      "additionalProperties": false
+    },
+    "TelegramDestinations": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "idle",
+            "loading",
+            "ready",
+            "blocked",
+            "failed"
+          ]
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?[1-9][0-9]{0,18}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "account_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/TelegramDestinationCandidate"
+          }
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "can_load_more": {
+          "type": "boolean"
+        },
+        "exhausted": {
+          "type": "boolean"
+        },
+        "capped": {
+          "type": "boolean"
+        },
+        "failure_stage": {
+          "enum": [
+            "load",
+            "chats",
+            "chat",
+            "member",
+            null
+          ]
+        },
+        "failure_reason": {
+          "enum": [
+            "timeout",
+            "invalid_response",
+            "request_unavailable",
+            null
+          ]
+        },
+        "blocked_reason": {
+          "enum": [
+            "login_required",
+            "connection_required",
+            "native_unavailable",
+            "refresh_required",
+            null
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "account_id",
+        "account_epoch",
+        "items",
+        "next_cursor",
+        "can_load_more",
+        "exhausted",
+        "capped",
+        "blocked_reason"
+      ],
+      "additionalProperties": false
+    },
+    "ActivityQuery": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "before": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "ActivityEntry": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "category": {
+          "enum": [
+            "session",
+            "collection",
+            "model",
+            "delivery"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "session_starting",
+            "session_running",
+            "session_paused",
+            "session_attention",
+            "session_stopped",
+            "reading",
+            "skipped",
+            "history_saved",
+            "classification_started",
+            "classification_succeeded",
+            "classification_failed",
+            "classification_cancelled",
+            "delivery_pending",
+            "delivery_preparing",
+            "delivery_sending",
+            "delivery_sent",
+            "delivery_failed",
+            "delivery_unknown",
+            "delivery_cancelled",
+            "delivery_retryable",
+            "job_draft",
+            "job_waiting",
+            "job_blocked",
+            "job_paused",
+            "job_cancelled",
+            "collection_recovering",
+            "collection_recovered",
+            "telegram_test_verifying",
+            "telegram_test_sending",
+            "telegram_test_sent",
+            "telegram_test_failed",
+            "telegram_test_unknown"
+          ]
+        },
+        "revision_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delivery_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "author": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text_preview": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "permalink": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result": {
+          "enum": [
+            null,
+            "match",
+            "no_match",
+            "abstained"
+          ]
+        },
+        "due_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sequence",
+        "at",
+        "category",
+        "kind",
+        "revision_id",
+        "run_id",
+        "delivery_id",
+        "job_id",
+        "author",
+        "text_preview",
+        "permalink",
+        "destination",
+        "detail",
+        "result",
+        "due_at"
+      ],
+      "additionalProperties": false
+    },
+    "ActivityPage": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ActivityEntry"
+          },
+          "maxItems": 100
+        },
+        "cursor": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,18})$"
+        },
+        "has_more": {
+          "type": "boolean"
+        },
+        "older_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "session": {
+          "$ref": "#/definitions/SessionSnapshot"
+        },
+        "model": {
+          "$ref": "#/definitions/ModelRuntimeStatus"
+        },
+        "recording_ok": {
+          "type": "boolean"
+        },
+        "recovery": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RecoverySnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "entries",
+        "cursor",
+        "has_more",
+        "older_cursor",
+        "as_of",
+        "session",
+        "model",
+        "recording_ok"
+      ],
+      "additionalProperties": false
+    },
+    "RecoverySnapshot": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "enum": [
+            "unsupported_cards",
+            "unknown_layout",
+            "empty_feed"
+          ]
+        },
+        "retry_in_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "reason",
+        "retry_in_seconds",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "TelegramTestRequest": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        }
+      },
+      "required": [
+        "chat_id",
+        "account_id",
+        "account_epoch"
+      ],
+      "additionalProperties": false
+    },
+    "TelegramTestState": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "idle",
+            "verifying",
+            "sending",
+            "closing",
+            "sent",
+            "failed",
+            "unknown"
+          ]
+        },
+        "chat_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "account_epoch": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AccountEpoch"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "request_extra": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "temporary_message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "final_message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TelegramId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "chat_id",
+        "account_id",
+        "account_epoch",
+        "text",
+        "request_extra",
+        "temporary_message_id",
+        "final_message_id",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "SavedTelegramDestination": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "kind": {
+          "enum": [
+            "private",
+            "group",
+            "channel",
+            "saved_messages"
+          ]
+        },
+        "sender": {
+          "$ref": "#/definitions/SenderIdentity"
+        },
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        },
+        "saved_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(?:Z|\\+00:00)$"
+        }
+      },
+      "required": [
+        "chat_id",
+        "title",
+        "kind",
+        "sender",
+        "account_id",
+        "account_epoch",
+        "saved_at"
+      ],
+      "additionalProperties": false
+    },
+    "SavedTelegramDestinations": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/definitions/SavedTelegramDestination"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "SaveTelegramDestinationRequest": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "account_epoch": {
+          "$ref": "#/definitions/AccountEpoch"
+        }
+      },
+      "required": [
+        "chat_id",
+        "account_id",
+        "account_epoch"
+      ],
+      "additionalProperties": false
+    },
+    "ManualHistorySendRequest": {
+      "type": "object",
+      "properties": {
+        "job_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "preview_receipt": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "job_id",
+        "version",
+        "preview_receipt"
+      ],
+      "additionalProperties": false
+    },
+    "ManualHistoryPreview": {
+      "type": "object",
+      "properties": {
+        "job_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "job_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "destination": {
+          "$ref": "#/definitions/DestinationSnapshot"
+        },
+        "target": {
+          "$ref": "#/definitions/WorkflowTarget"
+        },
+        "preview_receipt": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "job_id",
+        "job_version",
+        "revision_id",
+        "text",
+        "destination",
+        "target",
+        "preview_receipt",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "ManualHistorySendState": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "idle",
+            "verifying",
+            "sending",
+            "closing",
+            "sent",
+            "failed",
+            "unknown"
+          ]
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "enum": [
+            null,
+            "preflight_unavailable",
+            "verification_failed",
+            "authority_changed",
+            "dispatch_unconfirmed",
+            "close_unconfirmed",
+            "durability_unconfirmed",
+            "timed_out"
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "job_id",
+        "job_version",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "EvaluatedAutoPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "confirmed",
+        "min_precision",
+        "min_recall",
+        "min_positive",
+        "min_predicted",
+        "languages"
+      ],
+      "properties": {
+        "confirmed": {
+          "const": true
+        },
+        "min_precision": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_recall": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_positive": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "min_predicted": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "en",
+              "zh",
+              "mixed",
+              "other"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "method": {
+          "const": "evaluated"
+        }
+      }
+    },
+    "RouteQueueConfig": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "enum": [
+            "immediate",
+            "interval",
+            "random"
+          ]
+        },
+        "interval_seconds": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        "minimum_seconds": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        "maximum_seconds": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        "start_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "interval"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "interval_seconds"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "random"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "minimum_seconds",
+              "maximum_seconds"
+            ]
+          }
+        }
+      ]
+    },
+    "RouteQueueQuery": {
+      "type": "object",
+      "properties": {
+        "route_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "maxLength": 20
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "RouteQueuePauseRequest": {
+      "type": "object",
+      "properties": {
+        "route_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "paused": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "route_id",
+        "paused"
+      ],
+      "additionalProperties": false
+    },
+    "RouteQueueCancelRequest": {
+      "type": "object",
+      "properties": {
+        "delivery_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "delivery_id"
+      ],
+      "additionalProperties": false
+    },
+    "RouteQueueItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "route_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "route_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 8192
+        },
+        "destination_id": {
+          "$ref": "#/definitions/TelegramId"
+        },
+        "destination_title": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "due_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "waiting",
+            "sending",
+            "sent",
+            "failed",
+            "unknown",
+            "cancelled",
+            "blocked"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "route_id",
+        "route_version",
+        "text",
+        "destination_id",
+        "destination_title",
+        "due_at",
+        "state",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "RouteQueue": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RouteQueueItem"
+          },
+          "maxItems": 200
+        },
+        "paused": {
+          "type": "boolean"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 20
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "paused",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "TelegramRecoveryState": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "closing",
+            "ready_to_login",
+            "blocked",
+            "failed"
+          ]
+        },
+        "reason": {
+          "enum": [
+            "not_started",
+            "recovery_interrupted",
+            "delivery_not_unknown",
+            "account_changed",
+            "attempt_changed",
+            "profile_binding_changed",
+            "profile_unavailable",
+            "quarantine_unavailable",
+            "native_client_not_closed",
+            "quarantine_verification_failed"
+          ]
+        }
+      },
+      "required": [
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "AuthCodeDelivery": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "telegram",
+            "sms",
+            "call",
+            "fragment",
+            "unknown"
+          ]
+        },
+        "next_method": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "telegram",
+                "sms",
+                "call",
+                "fragment",
+                "unknown"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resend_after_seconds": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 86400
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "method",
+        "next_method",
+        "resend_after_seconds"
+      ],
+      "additionalProperties": false,
+      "description": "Allowlisted delivery channel and server wait only. Never a phone number, code, password, URL or raw native payload."
+    }
+  },
+  "$ref": "#/definitions/Command"
+}

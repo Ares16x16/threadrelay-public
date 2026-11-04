@@ -1,0 +1,3 @@
+import type { ActivityEntry, ActivityPage } from '../../lib/contracts';
+export const entry=(sequence:string):ActivityEntry=>({sequence,at:'2026-11-01T04:00:00Z',category:'collection',kind:'reading',revision_id:null,run_id:null,delivery_id:null,job_id:null,author:'Example author',text_preview:`Visible post ${sequence}`,permalink:null,destination:null,detail:null,result:null,due_at:null});
+export const page=(entries:ActivityEntry[],changes:Partial<ActivityPage>={}):ActivityPage=>({entries,cursor:entries.at(-1)?.sequence??'0',has_more:false,older_cursor:null,as_of:'2026-11-01T04:00:00Z',recording_ok:true,session:{state:'stopped',counters:{observed:0,matched:0,queued:0,sent:0},attention_reason:null},model:{state:'not_loaded',model_id:null},...changes});

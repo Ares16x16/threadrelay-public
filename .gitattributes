@@ -1,0 +1,6 @@
+# Retain upstream notice bytes exactly, including CRLF/trailing blank lines;
+# their SHA256 identities are recorded in the notice SBOM, not normalized.
+packaging/notices/frontend/*/LICENSE* -text -whitespace
+packaging/notices/frontend/*/license* -text -whitespace
+packaging/notices/frontend/*/COPYING* -text -whitespace
+packaging/notices/frontend/*/NOTICE* -text -whitespace

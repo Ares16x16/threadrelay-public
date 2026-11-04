@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/tdlib/td",
+  "build_guidance": "https://tdlib.github.io/td/build.html",
+  "commit": "bc9c263e2bfee06aaab41e82db51a103376030bc",
+  "version": "1.8.67",
+  "schema": {
+    "path": "td/generate/scheme/td_api.tl",
+    "sha256": "98b21543066e0124623b7d36f6496ef38cf86e9f9825aedcdd8e2527633fee4c",
+    "size": 1152504,
+    "git_blob": "1a231657fc72481c04c881c7a54d72fc673a35da"
+  },
+  "exports": [
+    "td_create_client_id",
+    "td_send",
+    "td_receive",
+    "td_execute"
+  ],
+  "licenses": [
+    "LICENSE_1_0.txt",
+    "sqlite/sqlite/LICENSE"
+  ],
+  "configure": [
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DBUILD_TESTING=OFF",
+    "-DTD_ENABLE_JNI=OFF",
+    "-DTD_ENABLE_DOTNET=OFF",
+    "-DTD_E2E_ONLY=OFF",
+    "-DTD_GENERATE_SOURCE_FILES=OFF",
+    "-DTD_ENABLE_LTO=OFF",
+    "-DTD_INSTALL_STATIC_LIBRARIES=OFF",
+    "-DTD_INSTALL_SHARED_LIBRARIES=ON",
+    "-DTDUTILS_MIME_TYPE=ON",
+    "-DTDUTILS_USE_EXTERNAL_DEPENDENCIES=ON",
+    "-DOPENSSL_USE_STATIC_LIBS=TRUE"
+  ],
+  "source_inputs": {
+    "cmake": {
+      "version": "3.31.12",
+      "windows-x64_sha256": "0c4baa40f28b3f8225eb3fdf6946c987b4fe901403b4eaf2fbbd9378100aaa0c",
+      "macos-arm64_sha256": "799af7fd545db9bf1b9cfe72f8095880e727a2d4e0df0e3dffc3bc7b95c2d3b0",
+      "source": "https://github.com/Kitware/CMake/releases/tag/v3.31.12"
+    },
+    "openssl": {
+      "version": "3.5.9",
+      "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+      "source": "https://github.com/openssl/openssl/releases/tag/openssl-3.5.9"
+    },
+    "zlib": {
+      "version": "1.3.2",
+      "sha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+      "source": "https://www.zlib.net/zlib-1.3.2.tar.gz"
+    },
+    "gperf": {
+      "version": "3.3",
+      "sha256": "fd87e0aba7e43ae054837afd6cd4db03a3f2693deb3619085e6ed9d8d9604ad8",
+      "source": "https://ftp.gnu.org/gnu/gperf/gperf-3.3.tar.gz",
+      "signature_url": "https://ftp.gnu.org/gnu/gperf/gperf-3.3.tar.gz.sig"
+    },
+    "ninja": {
+      "version": "1.13.2",
+      "sha256": "c99048673aa765960a99cf10c6ddb9f1fad506099ff0a0e137ad8960a88f321b",
+      "source": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-mac.zip"
+    }
+  },
+  "targets": {
+    "windows-x64": {
+      "library": "tdjson.dll",
+      "cmake_flags": [
+        "-G",
+        "Ninja",
+        "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded"
+      ],
+      "toolchain": null,
+      "inputs": null,
+      "artifact_sha256": null,
+      "native_acceptance": "Not run"
+    },
+    "macos-arm64": {
+      "library": "libtdjson.dylib",
+      "cmake_flags": [
+        "-G",
+        "Ninja",
+        "-DCMAKE_OSX_ARCHITECTURES=arm64",
+        "-DCMAKE_OSX_DEPLOYMENT_TARGET=14.0"
+      ],
+      "toolchain": null,
+      "inputs": null,
+      "artifact_sha256": "c0c31e8cc76c9f7b67f98dbe0a5e75c4083149ccafa670ba943552b53a1eafed",
+      "native_acceptance": "Not run",
+      "local_build_provenance": {
+        "scope": "official build identity, Mach-O loader and synthetic no-account clean-client smoke only",
+        "library_path": ".cache/tdlib-native/build-02/install/lib/libtdjson.1.8.67.dylib",
+        "compiler": "Apple clang 21.0.0 (clang-2100.3.34.2)",
+        "sdk": "Apple macOS SDK 27.0 (MacOSX27.0.sdk); deployment target 14.0",
+        "cmake": "3.31.12",
+        "ninja": "1.13.2",
+        "gperf": "3.3",
+        "perl": "5.44.0",
+        "reviewed_inputs_manifest": {
+          "path": ".cache/tdlib-native/manifest-candidate.json",
+          "sha256": "0d4d7fe26dc753ac26b3a5dce3380fc5d26b1450879e6199b9ac05f9f6fa1879"
+        },
+        "input_provenance": {
+          "path": ".cache/tdlib-native/input-provenance.json",
+          "sha256": "c97b41f1ecf776b73c6c35890a42bc5ead8e5033a82c1dba25e5f104da2a4464"
+        },
+        "build_identity": {
+          "path": ".cache/tdlib-native/build-02/build-identity.json",
+          "sha256": "b34c0c56d993da902ca765a0da8b3187bd828e4c668e543e5e3d8691ce29d1d0"
+        },
+        "no_account_observations": {
+          "path": ".cache/tdlib-native/no-account-observations.json",
+          "sha256": "24bc30ca48d69d697bd560139bef0b1e6f2a192a7530124fb129df0baca5d6c4"
+        },
+        "loader_observations": {
+          "path": ".cache/tdlib-native/loader-observations.txt",
+          "sha256": "834820d33cefe16eca6f0d372e3d756727bdddcb44afd0de7294148a088bee46"
+        },
+        "remaining_acceptance": "encrypted account restart and persisted-pending/no-flush lifecycle checks are Not run"
+      }
+    }
+  }
+}

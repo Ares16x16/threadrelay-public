@@ -1,0 +1,48 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { DeliveryDraft, DeliveryJob, DeliveryJobStatus } from '../../lib/contracts';
+import { useResource } from '../../lib/useResource';
+import { LoadState } from '../common';
+import { ReasonList, dueTime } from './Reasons';
+import type { DeliveryClient } from './types';
+import { ManualHistorySend, canSendHistoryNow, manualHistoryOutcomeMessage, type ManualHistoryClient, type ManualHistoryOutcome } from './ManualHistorySend';
+const mutable=new Set<DeliveryJobStatus>(['draft','blocked','waiting','paused']);
+export function DeliveryJobsView({worker,revision,onEdit,onNewRule,onOpenAccounts,onBusy,onOutcome,sendDisabled=false}:{worker:DeliveryClient;revision:number;onEdit:(draft:DeliveryDraft)=>void;onNewRule:()=>void;onOpenAccounts?:()=>void;onBusy?:(busy:boolean)=>void;onOutcome?:()=>void;sendDisabled?:boolean}) {
+ const [cursors,setCursors]=useState<Array<string|null>>([null]),[status,setStatus]=useState<DeliveryJobStatus|''>(''),[pending,setPending]=useState(false),[message,setMessage]=useState(''),cursor=cursors[cursors.length-1];
+ const [manualBusy,setManualBusy]=useState<string|null>(null),[manualOutcomes,setManualOutcomes]=useState<Partial<Record<string,ManualHistoryOutcome>>>({}),manualLock=useRef<string|null>(null),busy=pending||manualBusy!==null;
+ const busyCallback=useRef(onBusy);busyCallback.current=onBusy;useEffect(()=>{busyCallback.current?.(busy);return()=>busyCallback.current?.(false);},[busy]);
+ const heading=useRef<HTMLHeadingElement>(null);useEffect(()=>{if(revision>0){setStatus('');setCursors([null]);heading.current?.focus();heading.current?.scrollIntoView?.({block:'start'});}},[revision]);
+ const active=useRef(false),locked=useRef(false);useEffect(()=>{active.current=true;return()=>{active.current=false;};},[]);
+ const load=useCallback(()=>{void revision;return worker.queryDeliveryJobs({cursor,limit:20,status:status||null});},[worker,cursor,status,revision]),data=useResource(load);
+ const loadWorkspace=useCallback(()=>{void revision;return worker.queryDeliveryWorkspace();},[worker,revision]),workspace=useResource(loadWorkspace);
+ const loadAccount=useCallback(()=>worker.queryAccount?worker.queryAccount():Promise.reject(new Error('Account unavailable')),[worker]),account=useResource(loadAccount);
+ useEffect(()=>{if(!account.value||account.error||account.loading)return;const timer=setTimeout(()=>void account.refresh({background:true}),2500);return()=>clearTimeout(timer);},[account.revision,account.error,account.loading,account.refresh]);
+ const refresh=()=>{void data.refresh();void workspace.refresh();void account.refresh();};
+ const action=async(job:DeliveryJob,operation:'pause'|'resume'|'cancel')=>{
+  if(locked.current||manualLock.current||data.loading||data.error)return;locked.current=true;setPending(true);setMessage('');
+  try{const request={job_id:job.id,version:job.version};await (operation==='pause'?worker.pauseDeliveryJob(request):operation==='resume'?worker.resumeDeliveryJob(request):worker.cancelDeliveryJob(request));if(active.current){setMessage(`Job ${operation==='pause'?'paused':operation==='resume'?'resume requested':'cancelled'}. Current status is shown below.`);await data.refresh();}}
+  catch{if(active.current){setMessage('The job change was not confirmed. Refresh jobs to inspect its current state before trying again.');await data.refresh();}}
+  finally{locked.current=false;if(active.current)setPending(false);}
+ };
+ const edit=async(id:string)=>{if(locked.current||manualLock.current)return;locked.current=true;setPending(true);setMessage('');try{const draft=await worker.getDeliveryDraft(id);if(active.current)onEdit(draft);}catch{if(active.current)setMessage('Could not load this draft. Refresh and try again.');}finally{locked.current=false;if(active.current)setPending(false);}};
+ const manualClient=worker.previewManualHistorySend&&worker.sendManualHistoryOnce&&worker.queryManualHistorySend?worker as ManualHistoryClient:null;
+ return <section className="panel" aria-label="Delivery jobs"><div className="section-heading"><h2 ref={heading} tabIndex={-1}>Delivery jobs</h2><button disabled={busy||data.loading} onClick={refresh}>Refresh jobs</button></div>
+ <label>Job status<select value={status} disabled={busy} onChange={event=>{setStatus(event.target.value as DeliveryJobStatus|'');setCursors([null]);}}><option value="">All statuses</option>{(['draft','blocked','waiting','paused','sending','sent','failed','unknown','cancelled'] as const).map(value=><option key={value} value={value}>{value[0].toUpperCase()+value.slice(1)}</option>)}</select></label>
+ <LoadState loading={data.loading} error={data.error} hasValue={false} retry={refresh}/>
+ {(data.loading||data.error)&&Object.entries(manualOutcomes).map(([id,outcome])=><p role="status" key={id}>{manualHistoryOutcomeMessage(outcome!)}</p>)}
+ {!data.loading&&!data.error&&data.value&&<>{!data.value.items.length&&<p>No jobs yet. Select posts in History to prepare a message.</p>}{data.value.items.map(job=>{
+  const outcome=manualOutcomes[job.id],currentStatus=outcome??job.status,manual=!!manualClient&&canSendHistoryNow(job)&&!outcome;
+  const named=workspace.error?undefined:workspace.value?.targets.find(item=>item.target.account_id===job.target?.account_id&&item.target.account_epoch===job.target.account_epoch&&item.target.destination_id===job.target.destination_id&&item.target.sender.kind===job.target.sender.kind&&item.target.sender.id===job.target.sender.id)?.destination;
+  const reasons=manual?job.blocked_reasons.filter(code=>code!=='native_delivery_unavailable'&&code!=='destination_unverified'):job.blocked_reasons;
+  const a=account.value?.snapshot;
+  const connection=account.error?'Telegram status unavailable. Refresh jobs to check again.':account.loading?'Checking Telegram…':!a||a.auth_state!=='ready'||a.network_state==='offline'?'Connect Telegram to send this message.':a.revocation_pending?'Complete account removal in Accounts.':a.account_id!==job.target?.account_id||a.epoch!==job.target?.account_epoch?'The account changed. Review this message with the selected account.':a.network_state!=='online'?'Telegram is connecting. Wait until it is connected.':null;
+  const ready=manual&&!connection&&!reasons.length&&!sendDisabled;
+  return <article key={job.id} aria-label={`Delivery job ${job.id}`}><h3>{job.kind==='rule'?'New-history rule':'Message'} · {currentStatus[0].toUpperCase()+currentStatus.slice(1)}</h3>
+   {job.text!==null&&<p className="preserve outgoing">{job.text}</p>}{job.target&&<p>To {named?.title||job.target.destination_id}</p>}
+   {outcome?<p role="status">{manualHistoryOutcomeMessage(outcome)}</p>:<>{ready&&<p>Ready for manual review.</p>}{manual&&connection&&<p role="status">{connection}</p>}{manual&&sendDisabled&&<p>Finish or close the open draft before sending this message.</p>}<ReasonList codes={reasons}/>{currentStatus==='unknown'&&!reasons.includes('unknown_outcome')&&<ReasonList codes={['unknown_outcome']}/>}</>}
+   <div className="actions">{manual&&<ManualHistorySend worker={manualClient!} job={job} disabled={!ready||pending||!!manualBusy&&manualBusy!==job.id} onBusy={value=>{if(value){manualLock.current=job.id;setManualBusy(job.id);}else if(manualLock.current===job.id){manualLock.current=null;setManualBusy(null);}}} onTerminal={result=>{if(!active.current)return;setManualOutcomes(old=>({...old,[job.id]:result}));onOutcome?.();return data.refresh({background:true});}}/>}{manual&&connection&&onOpenAccounts&&<button type="button" disabled={busy} onClick={onOpenAccounts}>Open Accounts</button>}{mutable.has(currentStatus)&&job.requires_approval&&<button disabled={busy} onClick={()=>void edit(job.draft_id)}>Review job draft</button>}{mutable.has(currentStatus)&&!manual&&!job.requires_approval&&(currentStatus==='paused'||currentStatus==='blocked')&&<button disabled={busy} onClick={()=>void action(job,'resume')}>Resume job</button>}</div>
+   <details><summary>Details</summary><p className="wrap">{job.id}</p><p>Version {job.version} · Next due: {dueTime(job.due_at,job.timing.timezone)}</p><p>Timing: {job.timing.mode.replaceAll('_',' ')}{job.timing.mode==='new_matching'?` · ${job.timing.delivery_mode} · topics ${job.timing.topic_ids.join(', ')}`:''}</p>{job.target&&<p>Destination {job.target.destination_id} · sender {job.target.sender.kind} {job.target.sender.id}</p>}{mutable.has(currentStatus)&&<div className="actions">{currentStatus!=='paused'&&<button disabled={busy} onClick={()=>void action(job,'pause')}>Pause job</button>}<button disabled={busy} onClick={()=>void action(job,'cancel')}>Cancel job</button></div>}</details>
+  </article>;
+ })}</>}
+ {(cursors.length>1||data.value?.next_cursor)&&<div className="actions"><button disabled={busy||data.loading||cursors.length<2} onClick={()=>setCursors(old=>old.slice(0,-1))}>Previous jobs page</button><button disabled={busy||data.loading||!!data.error||!data.value?.next_cursor} onClick={()=>{if(data.value?.next_cursor)setCursors(old=>[...old,data.value!.next_cursor]);}}>Next jobs page</button></div>}
+ <details><summary>Rules and saved drafts</summary><button disabled={busy} onClick={onNewRule}>Prepare new-history rule</button><LoadState loading={workspace.loading} error={workspace.error} hasValue={false} retry={()=>void workspace.refresh()}/>{!workspace.loading&&!workspace.error&&workspace.value?.drafts.map(draft=><div className="actions" key={draft.id}><span className="wrap">{draft.id} · {draft.revision_ids.length} sources · {draft.timing.mode.replaceAll('_',' ')}</span><button disabled={busy} onClick={()=>void edit(draft.id)}>Open draft {draft.id}</button></div>)}</details>{message&&<p role="status">{message}</p>}</section>;
+}

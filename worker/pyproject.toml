@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "threadrelay-worker"
+version = "0.1.0"
+description = "Private, fail-closed ThreadRelay worker"
+requires-python = ">=3.12,<3.13"
+dependencies = ["jsonschema[format]==4.25.1", "playwright==1.64.1"]
+
+[dependency-groups]
+dev = [
+    "pytest==8.4.2",
+    "ruff==0.14.2",
+]
+
+[project.scripts]
+threadrelay-worker = "threadrelay.main:main"
+threadrelay-packaged-worker = "threadrelay.packaged_worker:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/threadrelay"]
+
+[tool.ruff.lint]
+# Existing compact source is retained to keep hardening diffs reviewable.
+# New modules are formatted; these two layout-only rules are not safety checks.
+extend-ignore = ["E701", "E702"]
+
+[tool.ruff.lint.per-file-ignores]
+# Pytest imports this fixture by name; function parameters intentionally shadow it.
+"tests/test_delivery.py" = ["F811"]
+"tests/test_feature_ipc.py" = ["F811"]
+"tests/test_pipeline.py" = ["F811"]

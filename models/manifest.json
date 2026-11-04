@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "primary_model_id": "h2o-lightning-4b-q4-k-m",
+  "models": [
+    {
+      "manifest": {
+        "id": "h2o-lightning-4b-q4-k-m",
+        "version": "ff38e4448f584d30c140799e6e3f150dace64e23",
+        "url": "https://huggingface.co/h2oai/h2o-lightning-4b-gguf/resolve/ff38e4448f584d30c140799e6e3f150dace64e23/h2o-lightning-4b-Q4_K_M.gguf",
+        "sha256": "03b90d043897e0de78983e36702f182d19fb6b2321586707841533ea7d8c407d",
+        "license": "Apache-2.0",
+        "runtime_version": "b11946",
+        "quantization": "Q4_K_M"
+      },
+      "filename": "h2o-lightning-4b-Q4_K_M.gguf",
+      "size_bytes": 2708808736,
+      "format": "GGUF-v3",
+      "decision_type": "h2o-lightning",
+      "role": "primary-candidate-not-benchmarked"
+    },
+    {
+      "manifest": {
+        "id": "h2o-lightning-4b-q8-0",
+        "version": "ff38e4448f584d30c140799e6e3f150dace64e23",
+        "url": "https://huggingface.co/h2oai/h2o-lightning-4b-gguf/resolve/ff38e4448f584d30c140799e6e3f150dace64e23/h2o-lightning-4b-Q8_0.gguf",
+        "sha256": "c5bf7cb8485f60c3a3347a9975424f258c6017e1bb8663aaf0447b822fde1b59",
+        "license": "Apache-2.0",
+        "runtime_version": "b11946",
+        "quantization": "Q8_0"
+      },
+      "filename": "h2o-lightning-4b-Q8_0.gguf",
+      "size_bytes": 4482407456,
+      "format": "GGUF-v3",
+      "decision_type": "h2o-lightning",
+      "role": "optional-reference-not-benchmarked"
+    }
+  ],
+  "runtime": {
+    "project": "ggml-org/llama.cpp",
+    "version": "b11946",
+    "commit": "8ca4060b7e30e76baaa5670ee1ec1b760b7f8552",
+    "license": "MIT",
+    "prerelease": true,
+    "minimum_decision_version": "b11773",
+    "minimum_decision_commit": "7e3eeee0480902c90cbdff172f407dc063cf0770",
+    "endpoint": "/v1/systemone",
+    "artifacts": [
+      {
+        "platform": "windows-x64",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11946/llama-b11946-bin-win-cpu-x64.zip",
+        "sha256": "8a702bb07c873b133c56eb3acd92a48d7c5c9ad339c6435eddc5185e46e1a043"
+      },
+      {
+        "platform": "macos-arm64",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11946/llama-b11946-bin-macos-arm64.tar.gz",
+        "sha256": "d618da5e7bbb19077f086e6a7e1d77eab55b9bfd481f7531aadada86d13db9ed"
+      }
+    ]
+  },
+  "sources": {
+    "verified_at": "2026-10-28",
+    "model_metadata": "https://huggingface.co/api/models/h2oai/h2o-lightning-4b-gguf/revision/ff38e4448f584d30c140799e6e3f150dace64e23?blobs=true",
+    "publisher_manifest": "https://huggingface.co/h2oai/h2o-lightning-4b-gguf/raw/ff38e4448f584d30c140799e6e3f150dace64e23/artifact_manifest_v4.json",
+    "model_card": "https://huggingface.co/h2oai/h2o-lightning-4b-gguf/blob/ff38e4448f584d30c140799e6e3f150dace64e23/README.md",
+    "runtime_assets": "https://github.com/ggml-org/llama.cpp/releases/expanded_assets/b11946",
+    "api": "https://github.com/ggml-org/llama.cpp/blob/8ca4060b7e30e76baaa5670ee1ec1b760b7f8552/tools/server/README.md"
+  }
+}

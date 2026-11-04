@@ -1,0 +1,3695 @@
+{
+  "valid": [
+    {
+      "name": "ObservedPost",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "Topic",
+      "contract": "Topic",
+      "value": {
+        "id": "topic-1",
+        "version": 1,
+        "description": "Synthetic topic",
+        "positive_examples": [
+          "example"
+        ],
+        "negative_examples": [],
+        "exclusions": [],
+        "enabled": true
+      }
+    },
+    {
+      "name": "Classification",
+      "contract": "Classification",
+      "value": {
+        "post_id": "synthetic-1",
+        "model_version": "synthetic-v1",
+        "topic_results": [
+          {
+            "topic_id": "topic-1",
+            "match": false,
+            "abstained": true,
+            "score": null
+          }
+        ],
+        "abstained": true
+      }
+    },
+    {
+      "name": "Route",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": "-9007199254740993",
+        "mode": "review",
+        "enabled": true,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "Approval",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "Delivery",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "SessionConfig",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com/"
+      }
+    },
+    {
+      "name": "SessionSnapshot",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": 0,
+          "matched": 0,
+          "queued": 0,
+          "sent": 0
+        },
+        "attention_reason": null
+      }
+    },
+    {
+      "name": "PostIdentity",
+      "contract": "PostIdentity",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1"
+      }
+    },
+    {
+      "name": "ExtractionIssue",
+      "contract": "ExtractionIssue",
+      "value": {
+        "code": "missing_context",
+        "detail": "Media omitted"
+      }
+    },
+    {
+      "name": "DeliveryProposal",
+      "contract": "DeliveryProposal",
+      "value": {
+        "post": {
+          "post_id": "synthetic-1",
+          "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+          "author": "Synthetic author",
+          "text": "A synthetic example",
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "visibility": "unknown",
+          "quality_flags": [],
+          "observed_at": "2026-10-28T00:00:00Z",
+          "source_session_id": "session-fixture",
+          "quote": null
+        },
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "review",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "labels": [
+          "topic-1"
+        ],
+        "approval_required": true
+      }
+    },
+    {
+      "name": "AuthorizationResult",
+      "contract": "AuthorizationResult",
+      "value": {
+        "allowed": false,
+        "reason": "stopped"
+      }
+    },
+    {
+      "name": "ModelManifest",
+      "contract": "ModelManifest",
+      "value": {
+        "id": "synthetic",
+        "version": "1",
+        "url": "https://example.com/synthetic.gguf",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "license": "Synthetic fixture only",
+        "runtime_version": "fixture",
+        "quantization": "Q4_K_M"
+      }
+    },
+    {
+      "name": "VerificationResult",
+      "contract": "VerificationResult",
+      "value": {
+        "valid": false,
+        "reason": "not installed"
+      }
+    },
+    {
+      "name": "ShutdownReport",
+      "contract": "ShutdownReport",
+      "value": {
+        "stopped": true,
+        "remaining": []
+      }
+    },
+    {
+      "name": "PruneReport",
+      "contract": "PruneReport",
+      "value": {
+        "deleted_counts": {
+          "posts": 0
+        }
+      }
+    },
+    {
+      "name": "RecoverySummary",
+      "contract": "RecoverySummary",
+      "value": {
+        "counts": {
+          "unknown": 0
+        },
+        "reasons": []
+      }
+    },
+    {
+      "name": "DeliveryEvent",
+      "contract": "DeliveryEvent",
+      "value": {
+        "delivery_id": "delivery-1",
+        "state": "unknown"
+      }
+    },
+    {
+      "name": "Dataset",
+      "contract": "Dataset",
+      "value": {
+        "records": [
+          {
+            "post": {
+              "post_id": "synthetic-1",
+              "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+              "author": "Synthetic author",
+              "text": "A synthetic example",
+              "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "visibility": "unknown",
+              "quality_flags": [],
+              "observed_at": "2026-10-28T00:00:00Z",
+              "source_session_id": "session-fixture",
+              "quote": null
+            },
+            "expected_topic_ids": [
+              "topic-1"
+            ],
+            "language": "mixed"
+          }
+        ],
+        "split": "test"
+      }
+    },
+    {
+      "name": "EvaluationReport",
+      "contract": "EvaluationReport",
+      "value": {
+        "metrics": {
+          "precision": 0.95,
+          "language_slices": {
+            "zh": 1,
+            "en": 1,
+            "mixed": 1
+          },
+          "abstention_count": 1
+        },
+        "versions": {
+          "model": "synthetic"
+        },
+        "hardware": {
+          "cpu": "synthetic"
+        }
+      }
+    },
+    {
+      "name": "Event",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "State",
+        "payload": {
+          "state": "stopped",
+          "counters": {
+            "observed": 0,
+            "matched": 0,
+            "queued": 0,
+            "sent": 0
+          },
+          "attention_reason": null
+        }
+      }
+    },
+    {
+      "name": "command-Start",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "Start",
+        "payload": {
+          "feed_url": "https://www.threads.com/"
+        }
+      }
+    },
+    {
+      "name": "command-Pause",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "Pause",
+        "payload": {}
+      }
+    },
+    {
+      "name": "command-Stop",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "Stop",
+        "payload": {}
+      }
+    },
+    {
+      "name": "command-QueryState",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "QueryState",
+        "payload": {}
+      }
+    },
+    {
+      "name": "command-SaveTopic",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "SaveTopic",
+        "payload": {
+          "id": "topic-1",
+          "version": 1,
+          "description": "Synthetic topic",
+          "positive_examples": [
+            "example"
+          ],
+          "negative_examples": [],
+          "exclusions": [],
+          "enabled": true
+        }
+      }
+    },
+    {
+      "name": "command-SaveRoute",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "SaveRoute",
+        "payload": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "review",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        }
+      }
+    },
+    {
+      "name": "command-Approve",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "Approve",
+        "payload": {
+          "id": "approval-1",
+          "post_id": "synthetic-1",
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "destination_id": "-9007199254740993",
+          "route_id": "route-1",
+          "route_version": 1,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        }
+      }
+    },
+    {
+      "name": "command-Dismiss",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "Dismiss",
+        "payload": {
+          "post_id": "synthetic-1"
+        }
+      }
+    },
+    {
+      "name": "event-unsupported",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "Error",
+        "payload": {
+          "code": "unsupported",
+          "message": "Unavailable"
+        }
+      }
+    },
+    {
+      "name": "quoted-attribution",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": {
+          "author": "Quoted synthetic author",
+          "text": "Quoted words",
+          "permalink": null
+        }
+      }
+    },
+    {
+      "name": "full-proposed-config",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.net/",
+        "mode": "review",
+        "duration_seconds": 1800,
+        "max_posts": 100,
+        "max_auto_deliveries": 10
+      }
+    },
+    {
+      "name": "account-sender",
+      "contract": "SenderIdentity",
+      "value": {
+        "kind": "user",
+        "id": "9007199254740993"
+      }
+    },
+    {
+      "name": "account-snapshot",
+      "contract": "AccountSnapshot",
+      "value": {
+        "account_id": "9007199254740993",
+        "epoch": 1,
+        "auth_state": "ready",
+        "display_name": "Synthetic account",
+        "network_state": "offline",
+        "revocation_pending": false
+      }
+    },
+    {
+      "name": "account-no-account",
+      "contract": "AccountSnapshot",
+      "value": {
+        "account_id": null,
+        "epoch": 0,
+        "auth_state": "logged_out",
+        "display_name": null,
+        "network_state": "offline",
+        "revocation_pending": false
+      }
+    },
+    {
+      "name": "account-challenge",
+      "contract": "AuthChallenge",
+      "value": {
+        "kind": "code",
+        "challenge_id": "challenge-synthetic",
+        "expires_at": null
+      }
+    },
+    {
+      "name": "account-destination",
+      "contract": "DestinationSnapshot",
+      "value": {
+        "account_id": "9007199254740993",
+        "chat_id": "-9223372036854775808",
+        "title": "Synthetic destination",
+        "audience": "unknown",
+        "permissions": {
+          "can_send": false,
+          "can_select_sender": false
+        },
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "paid_required": false
+      }
+    },
+    {
+      "name": "account-attempt",
+      "contract": "TelegramAttempt",
+      "value": {
+        "delivery_id": "delivery-1",
+        "attempt_id": "attempt-synthetic",
+        "request_extra": "request-synthetic",
+        "temporary_message_id": "-9007199254740993",
+        "final_message_id": null,
+        "state": "sending"
+      }
+    },
+    {
+      "name": "account-id-0",
+      "contract": "TelegramId",
+      "value": "0"
+    },
+    {
+      "name": "account-id-9223372036854775807",
+      "contract": "TelegramId",
+      "value": "9223372036854775807"
+    },
+    {
+      "name": "account-id--9223372036854775808",
+      "contract": "TelegramId",
+      "value": "-9223372036854775808"
+    },
+    {
+      "name": "account-id-9007199254740993",
+      "contract": "TelegramId",
+      "value": "9007199254740993"
+    },
+    {
+      "name": "account-id--9007199254740993",
+      "contract": "TelegramId",
+      "value": "-9007199254740993"
+    },
+    {
+      "name": "account-TelegramAttempt-confirmed-final",
+      "contract": "TelegramAttempt",
+      "value": {
+        "delivery_id": "delivery-1",
+        "attempt_id": "attempt-synthetic",
+        "request_extra": "request-synthetic",
+        "temporary_message_id": "-9007199254740993",
+        "final_message_id": "9007199254740994",
+        "state": "sent"
+      }
+    },
+    {
+      "name": "account-Delivery-confirmed-final",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "sent",
+        "attempt_id": "attempt-synthetic",
+        "message_id": "9007199254740994",
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": "request-synthetic",
+        "temporary_message_id": null,
+        "final_message_id": "9007199254740994"
+      }
+    },
+    {
+      "name": "routing-bound-proposal",
+      "contract": "DeliveryProposal",
+      "value": {
+        "post": {
+          "post_id": "synthetic-1",
+          "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+          "author": "Synthetic author",
+          "text": "A synthetic example",
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "visibility": "unknown",
+          "quality_flags": [],
+          "observed_at": "2026-10-28T00:00:00Z",
+          "source_session_id": "session-fixture",
+          "quote": null
+        },
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "review",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "labels": [
+          "topic-1"
+        ],
+        "approval_required": true,
+        "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": null
+          }
+        ],
+        "destination_version": 1,
+        "destination": {
+          "account_id": "9007199254740993",
+          "chat_id": "-9007199254740993",
+          "title": "Synthetic audience",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          },
+          "paid_required": false
+        }
+      }
+    },
+    {
+      "name": "stage8-query-topics",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "QueryTopics",
+        "payload": {}
+      }
+    },
+    {
+      "name": "stage8-qr-request",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "RequestTelegramQr",
+        "payload": {
+          "challenge_id": "challenge-fixture",
+          "account_epoch": 1
+        }
+      }
+    },
+    {
+      "name": "stage8-destination-request",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "VerifyDestination",
+        "payload": {
+          "chat_id": "-456",
+          "kind": "private",
+          "sender": null
+        }
+      }
+    },
+    {
+      "name": "stage8-history-empty",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "History",
+        "payload": []
+      }
+    },
+    {
+      "name": "DatasetWithEvaluationMetadata",
+      "contract": "Dataset",
+      "value": {
+        "records": [
+          {
+            "post": {
+              "post_id": "synthetic-1",
+              "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+              "author": "Synthetic author",
+              "text": "A synthetic example",
+              "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "visibility": "unknown",
+              "quality_flags": [],
+              "observed_at": "2026-10-28T00:00:00Z",
+              "source_session_id": "session-fixture",
+              "quote": null
+            },
+            "expected_topic_ids": [
+              "topic-1"
+            ],
+            "language": "mixed"
+          }
+        ],
+        "split": "test",
+        "topics": [
+          {
+            "id": "topic-1",
+            "version": 1,
+            "description": "Synthetic topic",
+            "positive_examples": [
+              "example"
+            ],
+            "negative_examples": [],
+            "exclusions": [],
+            "enabled": true
+          }
+        ],
+        "synthetic": true
+      }
+    },
+    {
+      "name": "InitializeLocalWorkspaceEmpty",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-initialize",
+        "type": "InitializeLocalWorkspace",
+        "payload": {}
+      }
+    },
+    {
+      "name": "QueryDryRunReadiness",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "readiness-fixture",
+        "type": "QueryReadiness",
+        "payload": {
+          "feed_url": "https://www.threads.com/",
+          "mode": "dry_run"
+        }
+      }
+    },
+    {
+      "name": "DryRunReadinessUnavailable",
+      "contract": "Readiness",
+      "value": {
+        "mode": "dry_run",
+        "browser": "unavailable",
+        "inference": "unavailable",
+        "telegram": "unavailable",
+        "automatic": "unavailable",
+        "can_start": false,
+        "reason": "browser_unavailable"
+      }
+    },
+    {
+      "name": "final-AutoPolicy",
+      "contract": "AutoPolicy",
+      "value": {
+        "confirmed": true,
+        "min_precision": 0.95,
+        "min_recall": 0.7,
+        "min_positive": 50,
+        "min_predicted": 50,
+        "languages": [
+          "en",
+          "zh",
+          "mixed",
+          "other"
+        ]
+      }
+    },
+    {
+      "name": "final-RetentionPolicy",
+      "contract": "RetentionPolicy",
+      "value": {
+        "text_days": 7,
+        "dedup_days": 30,
+        "diagnostic_days": 7,
+        "confirmed": false
+      }
+    },
+    {
+      "name": "final-AutoStatus",
+      "contract": "AutoStatus",
+      "value": {
+        "policy": null,
+        "evidence_available": false,
+        "eligible": false,
+        "reason": "trusted_evidence_unavailable"
+      }
+    },
+    {
+      "name": "final-SampleRequest",
+      "contract": "SampleRequest",
+      "value": {
+        "text": "Synthetic isolated sample; no send"
+      }
+    },
+    {
+      "name": "final-BulkReviewRequest",
+      "contract": "BulkReviewRequest",
+      "value": {
+        "items": [
+          {
+            "proposal": {
+              "post": {
+                "post_id": "synthetic-1",
+                "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+                "author": "Synthetic author",
+                "text": "A synthetic example",
+                "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "visibility": "unknown",
+                "quality_flags": [],
+                "observed_at": "2026-10-28T00:00:00Z",
+                "source_session_id": "session-fixture",
+                "quote": null
+              },
+              "route": {
+                "id": "route-1",
+                "version": 1,
+                "topic_ids": [
+                  "topic-1"
+                ],
+                "destination_id": "-9007199254740993",
+                "mode": "review",
+                "enabled": true,
+                "account_id": "9007199254740993",
+                "account_epoch": 1,
+                "sender": {
+                  "kind": "user",
+                  "id": "9007199254740993"
+                }
+              },
+              "labels": [
+                "topic-1"
+              ],
+              "approval_required": true,
+              "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+              "route_refs": [
+                {
+                  "route_id": "route-1",
+                  "route_version": 1,
+                  "approval_id": null
+                }
+              ],
+              "destination_version": 1,
+              "destination": {
+                "account_id": "9007199254740993",
+                "chat_id": "-9007199254740993",
+                "title": "Synthetic audience",
+                "audience": "private",
+                "permissions": {
+                  "can_send": true,
+                  "can_select_sender": false
+                },
+                "sender": {
+                  "kind": "user",
+                  "id": "9007199254740993"
+                },
+                "paid_required": false
+              }
+            },
+            "disclosure": {
+              "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+              "destination_version": 1,
+              "destination_id": "-9007199254740993",
+              "title": "Synthetic audience",
+              "audience": "private",
+              "source_visibility": "unknown",
+              "sender_kind": "user",
+              "sender_id": "9007199254740993"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "final-BulkDismissRequest",
+      "contract": "BulkDismissRequest",
+      "value": {
+        "items": [
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          }
+        ]
+      }
+    },
+    {
+      "name": "final-command-QueryRetention",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-command",
+        "type": "QueryRetention",
+        "payload": {}
+      }
+    },
+    {
+      "name": "final-command-SaveRetention",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-command",
+        "type": "SaveRetention",
+        "payload": {
+          "text_days": 7,
+          "dedup_days": 30,
+          "diagnostic_days": 7,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "name": "final-command-QueryAutoStatus",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-command",
+        "type": "QueryAutoStatus",
+        "payload": {}
+      }
+    },
+    {
+      "name": "final-command-SaveAutoPolicy",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-command",
+        "type": "SaveAutoPolicy",
+        "payload": {
+          "confirmed": true,
+          "min_precision": 0.95,
+          "min_recall": 0.7,
+          "min_positive": 50,
+          "min_predicted": 50,
+          "languages": [
+            "en",
+            "zh",
+            "mixed",
+            "other"
+          ]
+        }
+      }
+    },
+    {
+      "name": "final-command-TestSample",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-command",
+        "type": "TestSample",
+        "payload": {
+          "text": "Synthetic sample"
+        }
+      }
+    },
+    {
+      "name": "final-command-BulkApproveReview",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-command",
+        "type": "BulkApproveReview",
+        "payload": {
+          "items": [
+            {
+              "proposal": {
+                "post": {
+                  "post_id": "synthetic-1",
+                  "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+                  "author": "Synthetic author",
+                  "text": "A synthetic example",
+                  "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "visibility": "unknown",
+                  "quality_flags": [],
+                  "observed_at": "2026-10-28T00:00:00Z",
+                  "source_session_id": "session-fixture",
+                  "quote": null
+                },
+                "route": {
+                  "id": "route-1",
+                  "version": 1,
+                  "topic_ids": [
+                    "topic-1"
+                  ],
+                  "destination_id": "-9007199254740993",
+                  "mode": "review",
+                  "enabled": true,
+                  "account_id": "9007199254740993",
+                  "account_epoch": 1,
+                  "sender": {
+                    "kind": "user",
+                    "id": "9007199254740993"
+                  }
+                },
+                "labels": [
+                  "topic-1"
+                ],
+                "approval_required": true,
+                "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                "route_refs": [
+                  {
+                    "route_id": "route-1",
+                    "route_version": 1,
+                    "approval_id": null
+                  }
+                ],
+                "destination_version": 1,
+                "destination": {
+                  "account_id": "9007199254740993",
+                  "chat_id": "-9007199254740993",
+                  "title": "Synthetic audience",
+                  "audience": "private",
+                  "permissions": {
+                    "can_send": true,
+                    "can_select_sender": false
+                  },
+                  "sender": {
+                    "kind": "user",
+                    "id": "9007199254740993"
+                  },
+                  "paid_required": false
+                }
+              },
+              "disclosure": {
+                "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                "destination_version": 1,
+                "destination_id": "-9007199254740993",
+                "title": "Synthetic audience",
+                "audience": "private",
+                "source_visibility": "unknown",
+                "sender_kind": "user",
+                "sender_id": "9007199254740993"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "final-command-BulkDismissReview",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-command",
+        "type": "BulkDismissReview",
+        "payload": {
+          "items": [
+            {
+              "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Auto preview disclosure",
+      "contract": "AutoRoutePreview",
+      "value": {
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "destination": {
+          "account_id": "9007199254740993",
+          "chat_id": "-9007199254740993",
+          "title": "Synthetic destination",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          },
+          "paid_required": false
+        },
+        "destination_version": 1,
+        "policy": {
+          "confirmed": true,
+          "min_precision": 1,
+          "min_recall": 1,
+          "min_positive": 1,
+          "min_predicted": 1,
+          "languages": [
+            "en",
+            "zh",
+            "mixed",
+            "other"
+          ]
+        },
+        "evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "topics": [
+          {
+            "id": "topic-1",
+            "version": 1,
+            "description": "Synthetic topic",
+            "positive_examples": [
+              "example"
+            ],
+            "negative_examples": [],
+            "exclusions": [],
+            "enabled": true
+          }
+        ],
+        "versions": {
+          "model_sha256": "fixture-only-not-authority"
+        },
+        "receipt": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    },
+    {
+      "name": "Auto preview query",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "preview",
+        "type": "PreviewAutoRoute",
+        "payload": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        }
+      }
+    },
+    {
+      "name": "Auto preview event",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "preview",
+        "type": "AutoRoutePreview",
+        "payload": {
+          "route": {
+            "id": "route-1",
+            "version": 1,
+            "topic_ids": [
+              "topic-1"
+            ],
+            "destination_id": "-9007199254740993",
+            "mode": "auto",
+            "enabled": true,
+            "account_id": "9007199254740993",
+            "account_epoch": 1,
+            "sender": {
+              "kind": "user",
+              "id": "9007199254740993"
+            }
+          },
+          "destination": {
+            "account_id": "9007199254740993",
+            "chat_id": "-9007199254740993",
+            "title": "Synthetic destination",
+            "audience": "private",
+            "permissions": {
+              "can_send": true,
+              "can_select_sender": false
+            },
+            "sender": {
+              "kind": "user",
+              "id": "9007199254740993"
+            },
+            "paid_required": false
+          },
+          "destination_version": 1,
+          "policy": {
+            "confirmed": true,
+            "min_precision": 1,
+            "min_recall": 1,
+            "min_positive": 1,
+            "min_predicted": 1,
+            "languages": [
+              "en",
+              "zh",
+              "mixed",
+              "other"
+            ]
+          },
+          "evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "topics": [
+            {
+              "id": "topic-1",
+              "version": 1,
+              "description": "Synthetic topic",
+              "positive_examples": [
+                "example"
+              ],
+              "negative_examples": [],
+              "exclusions": [],
+              "enabled": true
+            }
+          ],
+          "versions": {
+            "model_sha256": "fixture-only-not-authority"
+          },
+          "receipt": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      }
+    },
+    {
+      "name": "Auto exact consent",
+      "contract": "AutoRouteOptIn",
+      "value": {
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "confirmed": true,
+        "expected_receipt": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    },
+    {
+      "name": "manual-history-send-request",
+      "contract": "ManualHistorySendRequest",
+      "value": {
+        "job_id": "job",
+        "version": 1,
+        "preview_receipt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "name": "manual-history-idle",
+      "contract": "ManualHistorySendState",
+      "value": {
+        "state": "idle",
+        "job_id": null,
+        "job_version": null,
+        "reason": null
+      }
+    },
+    {
+      "name": "manual-history-preview",
+      "contract": "ManualHistoryPreview",
+      "value": {
+        "job_id": "job",
+        "job_version": 1,
+        "revision_id": "revision",
+        "text": "https://www.threads.com/@alice/post/post1",
+        "destination": {
+          "account_id": "7",
+          "chat_id": "-20",
+          "title": "Chosen group",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "7"
+          },
+          "paid_required": false
+        },
+        "target": {
+          "account_id": "7",
+          "account_epoch": 2,
+          "destination_id": "-20",
+          "destination_version": 1,
+          "sender": {
+            "kind": "user",
+            "id": "7"
+          }
+        },
+        "preview_receipt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expires_at": "2026-11-01T15:00:00Z"
+      }
+    },
+    {
+      "name": "manual-history-preview-command",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "manual",
+        "type": "PreviewManualHistorySend",
+        "payload": {
+          "job_id": "job",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "manual-history-send-command",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "manual",
+        "type": "SendManualHistoryOnce",
+        "payload": {
+          "job_id": "job",
+          "version": 1,
+          "preview_receipt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    },
+    {
+      "name": "manual-history-query-command",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "manual",
+        "type": "QueryManualHistorySend",
+        "payload": {}
+      }
+    },
+    {
+      "name": "manual-history-preview-event",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "manual",
+        "type": "ManualHistoryPreview",
+        "payload": {
+          "job_id": "job",
+          "job_version": 1,
+          "revision_id": "revision",
+          "text": "https://www.threads.com/@alice/post/post1",
+          "destination": {
+            "account_id": "7",
+            "chat_id": "-20",
+            "title": "Chosen group",
+            "audience": "private",
+            "permissions": {
+              "can_send": true,
+              "can_select_sender": false
+            },
+            "sender": {
+              "kind": "user",
+              "id": "7"
+            },
+            "paid_required": false
+          },
+          "target": {
+            "account_id": "7",
+            "account_epoch": 2,
+            "destination_id": "-20",
+            "destination_version": 1,
+            "sender": {
+              "kind": "user",
+              "id": "7"
+            }
+          },
+          "preview_receipt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "expires_at": "2026-11-01T15:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "explicit-score-auto-policy",
+      "contract": "AutoPolicy",
+      "value": {
+        "confirmed": true,
+        "method": "topic_score"
+      }
+    },
+    {
+      "name": "explicit-score-auto-policy-command",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "score-policy",
+        "type": "SaveAutoPolicy",
+        "payload": {
+          "confirmed": true,
+          "method": "topic_score"
+        }
+      }
+    },
+    {
+      "name": "score-auto-honest-disclosure",
+      "contract": "AutoRoutePreview",
+      "value": {
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "destination": {
+          "account_id": "9007199254740993",
+          "chat_id": "-9007199254740993",
+          "title": "Synthetic destination",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          },
+          "paid_required": false
+        },
+        "destination_version": 1,
+        "policy": {
+          "confirmed": true,
+          "method": "topic_score"
+        },
+        "evidence_sha256": null,
+        "topics": [
+          {
+            "id": "topic-1",
+            "version": 1,
+            "description": "Synthetic topic",
+            "positive_examples": [
+              "example"
+            ],
+            "negative_examples": [],
+            "exclusions": [],
+            "enabled": true
+          }
+        ],
+        "versions": {
+          "decision_method": "topic_score",
+          "model_sha256": "fixture-only-not-authority"
+        },
+        "receipt": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    },
+    {
+      "name": "RouteQueueQuery",
+      "contract": "RouteQueueQuery",
+      "value": {}
+    },
+    {
+      "name": "RouteQueue",
+      "contract": "RouteQueue",
+      "value": {
+        "items": [],
+        "paused": false,
+        "next_cursor": null
+      }
+    },
+    {
+      "name": "RouteQueueConfig",
+      "contract": "RouteQueueConfig",
+      "value": {
+        "mode": "interval",
+        "interval_seconds": 60
+      }
+    },
+    {
+      "name": "RestoreTelegramSessionCommand",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "restore-saved-session",
+        "type": "RestoreTelegramSession",
+        "payload": {}
+      }
+    },
+    {
+      "name": "RestoreTelegramSessionAcknowledged",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "restore-saved-session",
+        "type": "Acknowledged",
+        "payload": {
+          "operation": "RestoreTelegramSession"
+        }
+      }
+    },
+    {
+      "name": "Unlimited automatic delivery session",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com/",
+        "mode": "auto",
+        "continuous": true,
+        "unlimited_auto_deliveries": true,
+        "max_auto_deliveries": 0,
+        "route_ids": [
+          "route-1"
+        ]
+      }
+    },
+    {
+      "name": "Higher finite automatic delivery session",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com/",
+        "mode": "auto",
+        "max_auto_deliveries": 250
+      }
+    },
+    {
+      "name": "CheckTelegramLoginCommand",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "login-preflight",
+        "type": "CheckTelegramLogin",
+        "payload": {}
+      }
+    },
+    {
+      "name": "CheckTelegramLoginAcknowledged",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "login-preflight",
+        "type": "Acknowledged",
+        "payload": {
+          "operation": "CheckTelegramLogin"
+        }
+      }
+    },
+    {
+      "name": "BeginTelegramRecoveryCommand",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "recovery",
+        "type": "BeginTelegramRecovery",
+        "payload": {
+          "delivery_id": "synthetic-unknown"
+        }
+      }
+    },
+    {
+      "name": "QueryTelegramRecoveryCommand",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "recovery",
+        "type": "QueryTelegramRecovery",
+        "payload": {}
+      }
+    },
+    {
+      "name": "TelegramRecoveryStateEvent",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "recovery",
+        "type": "TelegramRecoveryState",
+        "payload": {
+          "state": "ready_to_login"
+        }
+      }
+    },
+    {
+      "name": "allowlisted Telegram code delivery",
+      "contract": "AuthCodeDelivery",
+      "value": {
+        "method": "telegram",
+        "next_method": "sms",
+        "resend_after_seconds": 12
+      }
+    },
+    {
+      "name": "explicit code resend request",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "resend-code",
+        "type": "ResendTelegramCode",
+        "payload": {
+          "challenge_id": "current",
+          "account_epoch": 0
+        }
+      }
+    },
+    {
+      "name": "scoped queue clear",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "clear-queue",
+        "type": "ClearRouteQueue",
+        "payload": {
+          "route_id": "route"
+        }
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "name": "unknown-command",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "RunShell",
+        "payload": {}
+      }
+    },
+    {
+      "name": "unimplemented-setup",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "Setup",
+        "payload": {}
+      }
+    },
+    {
+      "name": "wrong-version",
+      "contract": "Command",
+      "value": {
+        "version": 2,
+        "id": "fixture-1",
+        "type": "QueryState",
+        "payload": {}
+      }
+    },
+    {
+      "name": "string-version",
+      "contract": "Command",
+      "value": {
+        "version": "1",
+        "id": "fixture-1",
+        "type": "QueryState",
+        "payload": {}
+      }
+    },
+    {
+      "name": "renderer-handle",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "QueryState",
+        "payload": {},
+        "process_handle": 123
+      }
+    },
+    {
+      "name": "unknown-payload",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "QueryState",
+        "payload": {
+          "path": "/tmp"
+        }
+      }
+    },
+    {
+      "name": "null-payload",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-1",
+        "type": "QueryState",
+        "payload": null
+      }
+    },
+    {
+      "name": "missing-post-post_id",
+      "contract": "ObservedPost",
+      "value": {
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-permalink",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-author",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-text",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-content_hash",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-visibility",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-quality_flags",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-observed_at",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-source_session_id",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "quote": null
+      }
+    },
+    {
+      "name": "missing-post-quote",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture"
+      }
+    },
+    {
+      "name": "unknown-visibility",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "probably_public",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "naive-time",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "non-utc-time",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T01:00:00+01:00",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "invalid-calendar",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-02-30T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "invalid-hash",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "not-a-hash",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": null
+      }
+    },
+    {
+      "name": "flattened-quote",
+      "contract": "ObservedPost",
+      "value": {
+        "post_id": "synthetic-1",
+        "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+        "author": "Synthetic author",
+        "text": "A synthetic example",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "visibility": "unknown",
+        "quality_flags": [],
+        "observed_at": "2026-10-28T00:00:00Z",
+        "source_session_id": "session-fixture",
+        "quote": "words"
+      }
+    },
+    {
+      "name": "negative-observed",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": -1,
+          "matched": 0,
+          "queued": 0,
+          "sent": 0
+        },
+        "attention_reason": null
+      }
+    },
+    {
+      "name": "negative-matched",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": 0,
+          "matched": -1,
+          "queued": 0,
+          "sent": 0
+        },
+        "attention_reason": null
+      }
+    },
+    {
+      "name": "negative-queued",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": 0,
+          "matched": 0,
+          "queued": -1,
+          "sent": 0
+        },
+        "attention_reason": null
+      }
+    },
+    {
+      "name": "negative-sent",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": 0,
+          "matched": 0,
+          "queued": 0,
+          "sent": -1
+        },
+        "attention_reason": null
+      }
+    },
+    {
+      "name": "fractional-counter",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": 0,
+          "matched": 0,
+          "queued": 0,
+          "sent": 0.5
+        },
+        "attention_reason": null
+      }
+    },
+    {
+      "name": "missing-counter",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": 0,
+          "matched": 0,
+          "sent": 0
+        },
+        "attention_reason": null
+      }
+    },
+    {
+      "name": "attention-missing",
+      "contract": "SessionSnapshot",
+      "value": {
+        "state": "stopped",
+        "counters": {
+          "observed": 0,
+          "matched": 0,
+          "queued": 0,
+          "sent": 0
+        }
+      }
+    },
+    {
+      "name": "unsafe-config-duration_seconds-1801",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com/",
+        "duration_seconds": 1801
+      }
+    },
+    {
+      "name": "unsafe-config-max_posts-101",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com/",
+        "max_posts": 101
+      }
+    },
+    {
+      "name": "unsafe-config-max_auto_deliveries-over-limit",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com/",
+        "max_auto_deliveries": 1000001
+      }
+    },
+    {
+      "name": "unsafe-config-max_posts-0",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com/",
+        "max_posts": 0
+      }
+    },
+    {
+      "name": "unsafe-config-feed_url-https://evil.example/",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://evil.example/"
+      }
+    },
+    {
+      "name": "unsafe-config-feed_url-https://www.threads.com.evil.example/",
+      "contract": "SessionConfig",
+      "value": {
+        "feed_url": "https://www.threads.com.evil.example/"
+      }
+    },
+    {
+      "name": "classification-action",
+      "contract": "Classification",
+      "value": {
+        "post_id": "synthetic-1",
+        "model_version": "synthetic-v1",
+        "topic_results": [
+          {
+            "topic_id": "topic-1",
+            "match": false,
+            "abstained": true,
+            "score": null
+          }
+        ],
+        "abstained": true,
+        "destination_id": "-9007199254740993"
+      }
+    },
+    {
+      "name": "topic-result-action",
+      "contract": "Classification",
+      "value": {
+        "post_id": "synthetic-1",
+        "model_version": "synthetic-v1",
+        "topic_results": [
+          {
+            "topic_id": "topic-1",
+            "match": true,
+            "abstained": false,
+            "action": "send"
+          }
+        ],
+        "abstained": true
+      }
+    },
+    {
+      "name": "abstention-cannot-match",
+      "contract": "Classification",
+      "value": {
+        "post_id": "synthetic-1",
+        "model_version": "synthetic-v1",
+        "topic_results": [
+          {
+            "topic_id": "topic-1",
+            "match": true,
+            "abstained": true
+          }
+        ],
+        "abstained": true
+      }
+    },
+    {
+      "name": "missing-route-provenance",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "empty-route-provenance",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "missing-approval-route",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_version": 1,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "negative-prune-count",
+      "contract": "PruneReport",
+      "value": {
+        "deleted_counts": {
+          "posts": -1
+        }
+      }
+    },
+    {
+      "name": "wrong-delivery-state",
+      "contract": "DeliveryEvent",
+      "value": {
+        "delivery_id": "delivery-1",
+        "state": "retry"
+      }
+    },
+    {
+      "name": "account-bad-id-9007199254740993",
+      "contract": "TelegramId",
+      "value": 9007199254740993
+    },
+    {
+      "name": "account-bad-id--9007199254740993",
+      "contract": "TelegramId",
+      "value": -9007199254740993
+    },
+    {
+      "name": "account-bad-id-9223372036854775808",
+      "contract": "TelegramId",
+      "value": "9223372036854775808"
+    },
+    {
+      "name": "account-bad-id--9223372036854775809",
+      "contract": "TelegramId",
+      "value": "-9223372036854775809"
+    },
+    {
+      "name": "account-bad-id-01",
+      "contract": "TelegramId",
+      "value": "01"
+    },
+    {
+      "name": "account-bad-id--0",
+      "contract": "TelegramId",
+      "value": "-0"
+    },
+    {
+      "name": "account-bad-id-+1",
+      "contract": "TelegramId",
+      "value": "+1"
+    },
+    {
+      "name": "account-bad-id-1e3",
+      "contract": "TelegramId",
+      "value": "1e3"
+    },
+    {
+      "name": "account-bad-id-",
+      "contract": "TelegramId",
+      "value": ""
+    },
+    {
+      "name": "account-bad-id- 1",
+      "contract": "TelegramId",
+      "value": " 1"
+    },
+    {
+      "name": "account-Route-missing-account_id",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": "-9007199254740993",
+        "mode": "review",
+        "enabled": true,
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Route-missing-account_epoch",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": "-9007199254740993",
+        "mode": "review",
+        "enabled": true,
+        "account_id": "9007199254740993",
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Route-missing-sender",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": "-9007199254740993",
+        "mode": "review",
+        "enabled": true,
+        "account_id": "9007199254740993",
+        "account_epoch": 1
+      }
+    },
+    {
+      "name": "account-Route-numeric-account_id",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": "-9007199254740993",
+        "mode": "review",
+        "enabled": true,
+        "account_id": 9007199254740993,
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Route-numeric-destination_id",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": 9007199254740993,
+        "mode": "review",
+        "enabled": true,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Route-numeric-sender",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": "-9007199254740993",
+        "mode": "review",
+        "enabled": true,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": 9007199254740993
+        }
+      }
+    },
+    {
+      "name": "account-Route-negative-epoch",
+      "contract": "Route",
+      "value": {
+        "id": "route-1",
+        "version": 1,
+        "topic_ids": [
+          "topic-1"
+        ],
+        "destination_id": "-9007199254740993",
+        "mode": "review",
+        "enabled": true,
+        "account_id": "9007199254740993",
+        "account_epoch": -1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Approval-missing-account_id",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Approval-missing-account_epoch",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_id": "9007199254740993",
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Approval-missing-sender",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_id": "9007199254740993",
+        "account_epoch": 1
+      }
+    },
+    {
+      "name": "account-Approval-numeric-account_id",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_id": 9007199254740993,
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Approval-numeric-destination_id",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": 9007199254740993,
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Approval-numeric-sender",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": 9007199254740993
+        }
+      }
+    },
+    {
+      "name": "account-Approval-negative-epoch",
+      "contract": "Approval",
+      "value": {
+        "id": "approval-1",
+        "post_id": "synthetic-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "destination_id": "-9007199254740993",
+        "route_id": "route-1",
+        "route_version": 1,
+        "account_id": "9007199254740993",
+        "account_epoch": -1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "account-Delivery-missing-account_id",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-Delivery-missing-account_epoch",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-Delivery-missing-sender",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-Delivery-numeric-account_id",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": 9007199254740993,
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-Delivery-numeric-destination_id",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": 9007199254740993,
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-Delivery-numeric-sender",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": 9007199254740993
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-Delivery-negative-epoch",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": -1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-numeric-final",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "pending",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": 9007199254740993
+      }
+    },
+    {
+      "name": "account-TelegramAttempt-sent-without-final",
+      "contract": "TelegramAttempt",
+      "value": {
+        "delivery_id": "delivery-1",
+        "attempt_id": "attempt-synthetic",
+        "request_extra": "request-synthetic",
+        "temporary_message_id": "-9007199254740993",
+        "final_message_id": null,
+        "state": "sent"
+      }
+    },
+    {
+      "name": "account-TelegramAttempt-numeric-final-id",
+      "contract": "TelegramAttempt",
+      "value": {
+        "delivery_id": "delivery-1",
+        "attempt_id": "attempt-synthetic",
+        "request_extra": "request-synthetic",
+        "temporary_message_id": "-9007199254740993",
+        "final_message_id": 9007199254740993,
+        "state": "sent"
+      }
+    },
+    {
+      "name": "account-Delivery-sent-without-final",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "sent",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": null
+      }
+    },
+    {
+      "name": "account-Delivery-numeric-final-id",
+      "contract": "Delivery",
+      "value": {
+        "id": "delivery-1",
+        "post_id": "synthetic-1",
+        "destination_id": "-9007199254740993",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "state": "sent",
+        "attempt_id": null,
+        "message_id": null,
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": "approval-1"
+          }
+        ],
+        "account_id": "9007199254740993",
+        "account_epoch": 1,
+        "sender": {
+          "kind": "user",
+          "id": "9007199254740993"
+        },
+        "request_extra": null,
+        "temporary_message_id": null,
+        "final_message_id": 9007199254740993
+      }
+    },
+    {
+      "name": "account-id-newline-positive",
+      "contract": "TelegramId",
+      "value": "123\n"
+    },
+    {
+      "name": "account-id-newline-negative",
+      "contract": "TelegramId",
+      "value": "-9\n"
+    },
+    {
+      "name": "account-id-newline-zero",
+      "contract": "TelegramId",
+      "value": "0\n"
+    },
+    {
+      "name": "account-id-newline-max",
+      "contract": "TelegramId",
+      "value": "9223372036854775807\n"
+    },
+    {
+      "name": "account-id-newline-min",
+      "contract": "TelegramId",
+      "value": "-9223372036854775808\n"
+    },
+    {
+      "name": "account-id-carriage-return",
+      "contract": "TelegramId",
+      "value": "123\r"
+    },
+    {
+      "name": "account-id-crlf",
+      "contract": "TelegramId",
+      "value": "123\r\n"
+    },
+    {
+      "name": "routing-invalid-plan_id",
+      "contract": "DeliveryProposal",
+      "value": {
+        "post": {
+          "post_id": "synthetic-1",
+          "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+          "author": "Synthetic author",
+          "text": "A synthetic example",
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "visibility": "unknown",
+          "quality_flags": [],
+          "observed_at": "2026-10-28T00:00:00Z",
+          "source_session_id": "session-fixture",
+          "quote": null
+        },
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "review",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "labels": [
+          "topic-1"
+        ],
+        "approval_required": true,
+        "plan_id": "not-a-plan",
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": null
+          }
+        ],
+        "destination_version": 1,
+        "destination": {
+          "account_id": "9007199254740993",
+          "chat_id": "-9007199254740993",
+          "title": "Synthetic audience",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          },
+          "paid_required": false
+        }
+      }
+    },
+    {
+      "name": "routing-invalid-destination_version",
+      "contract": "DeliveryProposal",
+      "value": {
+        "post": {
+          "post_id": "synthetic-1",
+          "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+          "author": "Synthetic author",
+          "text": "A synthetic example",
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "visibility": "unknown",
+          "quality_flags": [],
+          "observed_at": "2026-10-28T00:00:00Z",
+          "source_session_id": "session-fixture",
+          "quote": null
+        },
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "review",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "labels": [
+          "topic-1"
+        ],
+        "approval_required": true,
+        "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "route_refs": [
+          {
+            "route_id": "route-1",
+            "route_version": 1,
+            "approval_id": null
+          }
+        ],
+        "destination_version": 0,
+        "destination": {
+          "account_id": "9007199254740993",
+          "chat_id": "-9007199254740993",
+          "title": "Synthetic audience",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          },
+          "paid_required": false
+        }
+      }
+    },
+    {
+      "name": "routing-invalid-route_refs",
+      "contract": "DeliveryProposal",
+      "value": {
+        "post": {
+          "post_id": "synthetic-1",
+          "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+          "author": "Synthetic author",
+          "text": "A synthetic example",
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "visibility": "unknown",
+          "quality_flags": [],
+          "observed_at": "2026-10-28T00:00:00Z",
+          "source_session_id": "session-fixture",
+          "quote": null
+        },
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "review",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "labels": [
+          "topic-1"
+        ],
+        "approval_required": true,
+        "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "route_refs": [],
+        "destination_version": 1,
+        "destination": {
+          "account_id": "9007199254740993",
+          "chat_id": "-9007199254740993",
+          "title": "Synthetic audience",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          },
+          "paid_required": false
+        }
+      }
+    },
+    {
+      "name": "stage8-secret-in-command",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "RequestTelegramQr",
+        "payload": {
+          "challenge_id": "c",
+          "account_epoch": 1,
+          "code": "not-a-real-code"
+        }
+      }
+    },
+    {
+      "name": "stage8-unsafe-generic-auth",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "SubmitTelegramAuth",
+        "payload": {
+          "password": "not-a-real-password"
+        }
+      }
+    },
+    {
+      "name": "stage8-destination-number-not-string",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "VerifyDestination",
+        "payload": {
+          "chat_id": 456,
+          "kind": "private",
+          "sender": null
+        }
+      }
+    },
+    {
+      "name": "stage8-history-not-array",
+      "contract": "Event",
+      "value": {
+        "version": 1,
+        "id": "stage8-fixture",
+        "type": "History",
+        "payload": {}
+      }
+    },
+    {
+      "name": "DatasetSyntheticMustBeBoolean",
+      "contract": "Dataset",
+      "value": {
+        "records": [
+          {
+            "post": {
+              "post_id": "synthetic-1",
+              "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+              "author": "Synthetic author",
+              "text": "A synthetic example",
+              "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "visibility": "unknown",
+              "quality_flags": [],
+              "observed_at": "2026-10-28T00:00:00Z",
+              "source_session_id": "session-fixture",
+              "quote": null
+            },
+            "expected_topic_ids": [
+              "topic-1"
+            ],
+            "language": "mixed"
+          }
+        ],
+        "split": "test",
+        "topics": [
+          {
+            "id": "topic-1",
+            "version": 1,
+            "description": "Synthetic topic",
+            "positive_examples": [
+              "example"
+            ],
+            "negative_examples": [],
+            "exclusions": [],
+            "enabled": true
+          }
+        ],
+        "synthetic": "true"
+      }
+    },
+    {
+      "name": "DatasetTopicsMustBeTyped",
+      "contract": "Dataset",
+      "value": {
+        "records": [
+          {
+            "post": {
+              "post_id": "synthetic-1",
+              "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+              "author": "Synthetic author",
+              "text": "A synthetic example",
+              "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "visibility": "unknown",
+              "quality_flags": [],
+              "observed_at": "2026-10-28T00:00:00Z",
+              "source_session_id": "session-fixture",
+              "quote": null
+            },
+            "expected_topic_ids": [
+              "topic-1"
+            ],
+            "language": "mixed"
+          }
+        ],
+        "split": "test",
+        "topics": [
+          {
+            "id": "untyped"
+          }
+        ],
+        "synthetic": true
+      }
+    },
+    {
+      "name": "InitializeRejectsRendererPath",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "fixture-initialize",
+        "type": "InitializeLocalWorkspace",
+        "payload": {
+          "data_root": "/not-trusted"
+        }
+      }
+    },
+    {
+      "name": "ReadinessRejectsExtraCapability",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "bad-readiness",
+        "type": "QueryReadiness",
+        "payload": {
+          "feed_url": "https://www.threads.com/",
+          "native_proof": true
+        }
+      }
+    },
+    {
+      "name": "final-unconfirmed-auto",
+      "contract": "AutoPolicy",
+      "value": {
+        "confirmed": false,
+        "min_precision": 0.95,
+        "min_recall": 0.7,
+        "min_positive": 50,
+        "min_predicted": 50,
+        "languages": [
+          "en",
+          "zh",
+          "mixed",
+          "other"
+        ]
+      }
+    },
+    {
+      "name": "final-zero-auto-samples",
+      "contract": "AutoPolicy",
+      "value": {
+        "confirmed": true,
+        "min_precision": 0.95,
+        "min_recall": 0.7,
+        "min_positive": 0,
+        "min_predicted": 50,
+        "languages": [
+          "en",
+          "zh",
+          "mixed",
+          "other"
+        ]
+      }
+    },
+    {
+      "name": "final-repeated-language",
+      "contract": "AutoPolicy",
+      "value": {
+        "confirmed": true,
+        "min_precision": 0.95,
+        "min_recall": 0.7,
+        "min_positive": 50,
+        "min_predicted": 50,
+        "languages": [
+          "en",
+          "en"
+        ]
+      }
+    },
+    {
+      "name": "final-retention-zero",
+      "contract": "RetentionPolicy",
+      "value": {
+        "text_days": 0,
+        "dedup_days": 30,
+        "diagnostic_days": 7,
+        "confirmed": false
+      }
+    },
+    {
+      "name": "final-sample-no-url",
+      "contract": "SampleRequest",
+      "value": {
+        "text": "Synthetic",
+        "url": "https://example.com"
+      }
+    },
+    {
+      "name": "final-sample-too-long",
+      "contract": "SampleRequest",
+      "value": {
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    {
+      "name": "final-bulk-too-many",
+      "contract": "BulkDismissRequest",
+      "value": {
+        "items": [
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          {
+            "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          }
+        ]
+      }
+    },
+    {
+      "name": "final-bulk-no-shared-consent",
+      "contract": "BulkReviewRequest",
+      "value": {
+        "items": [
+          {
+            "proposal": {
+              "post": {
+                "post_id": "synthetic-1",
+                "permalink": "https://www.threads.com/@fixture/post/synthetic-1",
+                "author": "Synthetic author",
+                "text": "A synthetic example",
+                "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "visibility": "unknown",
+                "quality_flags": [],
+                "observed_at": "2026-10-28T00:00:00Z",
+                "source_session_id": "session-fixture",
+                "quote": null
+              },
+              "route": {
+                "id": "route-1",
+                "version": 1,
+                "topic_ids": [
+                  "topic-1"
+                ],
+                "destination_id": "-9007199254740993",
+                "mode": "review",
+                "enabled": true,
+                "account_id": "9007199254740993",
+                "account_epoch": 1,
+                "sender": {
+                  "kind": "user",
+                  "id": "9007199254740993"
+                }
+              },
+              "labels": [
+                "topic-1"
+              ],
+              "approval_required": true,
+              "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+              "route_refs": [
+                {
+                  "route_id": "route-1",
+                  "route_version": 1,
+                  "approval_id": null
+                }
+              ],
+              "destination_version": 1,
+              "destination": {
+                "account_id": "9007199254740993",
+                "chat_id": "-9007199254740993",
+                "title": "Synthetic audience",
+                "audience": "private",
+                "permissions": {
+                  "can_send": true,
+                  "can_select_sender": false
+                },
+                "sender": {
+                  "kind": "user",
+                  "id": "9007199254740993"
+                },
+                "paid_required": false
+              }
+            }
+          }
+        ],
+        "disclosure": {
+          "plan_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "destination_version": 1,
+          "destination_id": "-9007199254740993",
+          "title": "Synthetic audience",
+          "audience": "private",
+          "source_visibility": "unknown",
+          "sender_kind": "user",
+          "sender_id": "9007199254740993"
+        }
+      }
+    },
+    {
+      "name": "Auto consent without preview",
+      "contract": "AutoRouteOptIn",
+      "value": {
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "confirmed": true
+      }
+    },
+    {
+      "name": "Auto fabricated short preview",
+      "contract": "AutoRouteOptIn",
+      "value": {
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "confirmed": true,
+        "expected_receipt": "true"
+      }
+    },
+    {
+      "name": "Auto unconfirmed preview",
+      "contract": "AutoRouteOptIn",
+      "value": {
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "confirmed": false,
+        "expected_receipt": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    },
+    {
+      "name": "Auto preview missing disclosure",
+      "contract": "AutoRoutePreview",
+      "value": {
+        "receipt": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    },
+    {
+      "name": "manual-history-no-raw-text",
+      "contract": "ManualHistorySendRequest",
+      "value": {
+        "job_id": "job",
+        "version": 1,
+        "preview_receipt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "text": "untrusted fixture"
+      }
+    },
+    {
+      "name": "manual-history-no-unbound-send",
+      "contract": "ManualHistorySendRequest",
+      "value": {
+        "job_id": "job",
+        "version": 1,
+        "preview_receipt": "yes"
+      }
+    },
+    {
+      "name": "score-policy-no-invented-evaluation-hash",
+      "contract": "AutoRoutePreview",
+      "value": {
+        "route": {
+          "id": "route-1",
+          "version": 1,
+          "topic_ids": [
+            "topic-1"
+          ],
+          "destination_id": "-9007199254740993",
+          "mode": "auto",
+          "enabled": true,
+          "account_id": "9007199254740993",
+          "account_epoch": 1,
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          }
+        },
+        "destination": {
+          "account_id": "9007199254740993",
+          "chat_id": "-9007199254740993",
+          "title": "Synthetic destination",
+          "audience": "private",
+          "permissions": {
+            "can_send": true,
+            "can_select_sender": false
+          },
+          "sender": {
+            "kind": "user",
+            "id": "9007199254740993"
+          },
+          "paid_required": false
+        },
+        "destination_version": 1,
+        "policy": {
+          "confirmed": true,
+          "method": "topic_score"
+        },
+        "evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "topics": [
+          {
+            "id": "topic-1",
+            "version": 1,
+            "description": "Synthetic topic",
+            "positive_examples": [
+              "example"
+            ],
+            "negative_examples": [],
+            "exclusions": [],
+            "enabled": true
+          }
+        ],
+        "versions": {
+          "decision_method": "topic_score",
+          "model_sha256": "fixture-only-not-authority"
+        },
+        "receipt": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    },
+    {
+      "name": "score-policy-no-implicit-confirmation",
+      "contract": "AutoPolicy",
+      "value": {
+        "method": "topic_score"
+      }
+    },
+    {
+      "name": "score-policy-no-ambiguous-evaluated-criteria",
+      "contract": "AutoPolicy",
+      "value": {
+        "confirmed": true,
+        "method": "topic_score",
+        "min_precision": 1
+      }
+    },
+    {
+      "name": "RestoreTelegramSessionRejectsCredentials",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "restore-saved-session",
+        "type": "RestoreTelegramSession",
+        "payload": {
+          "api_hash": "synthetic-not-allowed"
+        }
+      }
+    },
+    {
+      "name": "CheckTelegramLoginRejectsCredentials",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "login-preflight",
+        "type": "CheckTelegramLogin",
+        "payload": {
+          "api_hash": "synthetic-not-allowed"
+        }
+      }
+    },
+    {
+      "name": "TelegramRecoveryRejectsPath",
+      "contract": "Command",
+      "value": {
+        "version": 1,
+        "id": "recovery",
+        "type": "BeginTelegramRecovery",
+        "payload": {
+          "delivery_id": "synthetic-unknown",
+          "path": "/tmp/not-allowed"
+        }
+      }
+    },
+    {
+      "name": "private phone excluded from code metadata",
+      "contract": "AuthCodeDelivery",
+      "value": {
+        "method": "telegram",
+        "next_method": null,
+        "resend_after_seconds": null,
+        "phone_number": "+12025550123"
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+[package]
+name = "threadrelay-desktop"
+version = "0.1.0"
+edition = "2021"
+default-run = "threadrelay-desktop"
+
+[lib]
+name = "threadrelay_desktop"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "threadrelay-evaluate"
+path = "src/evaluate.rs"
+
+[[bin]]
+name = "threadrelay-desktop"
+path = "src/main.rs"
+required-features = ["desktop"]
+
+[features]
+default = []
+# Headless boundary tests do not require a native WebKit/GTK installation.
+desktop = ["dep:tauri", "dep:tauri-build"]
+# Standard Tauri standalone asset embedding, independent of debug assertions.
+custom-protocol = ["tauri/custom-protocol"]
+# Source worker access is an explicit local developer build, never a release.
+development-worker = ["desktop"]
+connected-worker = ["development-worker"]
+
+[dependencies]
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+jsonschema = { version = "=0.33.0", default-features = false }
+getrandom = "=0.3.4"
+dirs = "=6.0.0"
+sha2 = "=0.10.9"
+threadrelay-artifact-hash = { path = "../../../crates/artifact-hash" }
+tauri = { version = "=2.12.5", optional = true , features = ["unstable"] }
+url = "=2.5.8"
+
+[target.'cfg(unix)'.dependencies]
+libc = "=0.2.191"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_JobObjects", "Win32_System_Threading", "Win32_System_Pipes", "Win32_System_Diagnostics_ToolHelp", "Win32_NetworkManagement_IpHelper", "Win32_Networking_WinSock", "Win32_System_ProcessStatus", "Win32_Security", "Win32_Security_Authorization", "Win32_Security_Credentials", "Win32_System_Power", "Win32_Storage_FileSystem", "Win32_UI_WindowsAndMessaging"] }
+
+[build-dependencies]
+cc = "=1.10.0"
+tauri-build = { version = "=2.7.4", optional = true , features = [] }
+
+# Multi-gigabyte pinned model reads must fit their existing native launch bound
+# in explicit debug builds too. Optimize both concrete SHA256 compression and
+# its generic Digest caller, leaving desktop lifecycle/debug assertions intact.
+[profile.dev.package.sha2]
+opt-level = 3
+
+[profile.dev.package.threadrelay-artifact-hash]
+opt-level = 3
